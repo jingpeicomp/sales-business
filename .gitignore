@@ -56,6 +56,7 @@ hs_err_pid*
 # Gradle:
 .idea/**/gradle.xml
 .idea/
+*.iml
 
 # CMake
 cmake-build-debug/
