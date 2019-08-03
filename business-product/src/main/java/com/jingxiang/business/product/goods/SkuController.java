@@ -1,8 +1,8 @@
 package com.jingxiang.business.product.goods;
 
 import com.jingxiang.business.exception.ServiceException;
-import com.jingxiang.business.product.goods.vo.SkuCreateRequest;
-import com.jingxiang.business.product.goods.vo.SkuVo;
+import com.jingxiang.business.product.base.vo.SkuCreateRequest;
+import com.jingxiang.business.product.base.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

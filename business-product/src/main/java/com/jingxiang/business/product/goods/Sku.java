@@ -1,7 +1,7 @@
 package com.jingxiang.business.product.goods;
 
-import com.jingxiang.business.product.goods.vo.SkuCreateRequest;
-import com.jingxiang.business.product.goods.vo.SkuVo;
+import com.jingxiang.business.product.base.vo.SkuCreateRequest;
+import com.jingxiang.business.product.base.vo.SkuVo;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,96 +22,103 @@ import java.time.LocalDateTime;
 @Data
 public class Sku implements Serializable {
     @Id
-    @Column(name = "ID")
+    @Column(name = "ID", columnDefinition = "varchar(32) not null comment '商品ID'")
     private String id;
 
-    @Column(name = "SHOP_ID", nullable = false, updatable = false)
+    /**
+     * 店铺ID
+     */
+    @Column(name = "SHOP_ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '店铺编号'")
     private String shopId;
 
     /**
      * 商品名称
      */
-    @Column(name = "NAME", nullable = false, length = 100, columnDefinition = "varchar(150)")
+    @Column(name = "NAME", nullable = false, length = 100, columnDefinition = "varchar(150) not null comment '商品名称'")
     private String name;
 
     /**
      * 商品单位
      */
-    @Column(name = "UNIT", nullable = false)
+    @Column(name = "UNIT", nullable = false, columnDefinition = "varchar(10) not null comment '商品单位'")
     private String unit;
 
     /**
      * 商品默认图片
      */
-    @Column(name = "PIC")
+    @Column(name = "PIC", columnDefinition = "varchar(100) comment '商品默认图片'")
     private String pic;
 
     /**
      * 商品库存
      */
-    @Column(name = "STOCK", nullable = false)
+    @Column(name = "STOCK", nullable = false, columnDefinition = "int not null default 0 comment '订单支付状态'")
     private BigDecimal stock = BigDecimal.ZERO;
 
     /**
-     * 商品价格
+     * 商品销售价
      */
-    @Column(name = "SALE_PRICE", nullable = false)
+    @Column(name = "SALE_PRICE", nullable = false, columnDefinition = "decimal(10,2) not null comment '商品销售价'")
     private BigDecimal salePrice;
 
     /**
      * 商品详情
      */
-    @Column(length = 3000, columnDefinition = "TEXT")
+    @Column(length = 3000, columnDefinition = "text comment '商品详情'")
     private String description;
 
     /**
      * 商品添加时间
      */
-    @Column(name = "ADD_TIME")
+    @Column(name = "CREATE_TIME", columnDefinition = "datetime not null default CURRENT_TIMESTAMP comment '商品添加时间'")
     @CreatedDate
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
-    private LocalDateTime addTime;
+    private LocalDateTime createTime;
 
     /**
      * 商品修改时间
      */
-    @Column(name = "UPDATE_TIME")
+    @Column(name = "UPDATE_TIME", columnDefinition = "datetime comment '商品修改时间'")
     @LastModifiedDate
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime updateTime;
 
-    @Column(name = "PUBLISH_TIME")
+    /**
+     * 商品发布时间
+     */
+    @Column(name = "PUBLISH_TIME", columnDefinition = "datetime comment '商品发布时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime publishTime;
 
     /**
      * 商品添加人
      */
-    @Column(name = "ADDER")
+    @Column(name = "ADDER", columnDefinition = "varchar(32) comment '商品添加人'")
     private String adder;
 
     /**
      * 商品修改人
      */
-    @Column(name = "MODIFIER")
+    @Column(name = "MODIFIER", columnDefinition = "varchar(32) comment '商品修改人'")
     private String modifier;
 
     /**
      * 商品发布人
      */
-    @Column(name = "PUBLISHER")
+    @Column(name = "PUBLISHER", columnDefinition = "varchar(32) comment '商品发布人'")
     private String publisher;
 
     /**
      * 商品描述图片URL列表，多个图片列表用“;”分隔
      */
-    @Column(length = 1000)
+    @Column(length = 1000,  columnDefinition = "varchar(1000) comment '商品描述图片URL列表，多个图片列表用;分隔'")
     private String images;
 
     /**
      * 版本号
      */
     @Version
+    @Column(name = "VERSION", columnDefinition = "bigint comment '版本号'")
     private Long version;
 
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -132,7 +139,7 @@ public class Sku implements Serializable {
                 .pic(pic)
                 .salePrice(salePrice)
                 .description(description)
-                .addTime(addTime)
+                .addTime(createTime)
                 .updateTime(updateTime)
                 .images(CommonUtils.splitStr(images))
                 .build();

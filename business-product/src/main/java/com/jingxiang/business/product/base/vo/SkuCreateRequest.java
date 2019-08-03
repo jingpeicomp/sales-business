@@ -1,4 +1,4 @@
-package com.jingxiang.business.product.goods.vo;
+package com.jingxiang.business.product.base.vo;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

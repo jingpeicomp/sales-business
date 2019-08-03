@@ -51,6 +51,11 @@
                 <artifactId>business-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.jingxiang</groupId>
+                <artifactId>business-product</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
