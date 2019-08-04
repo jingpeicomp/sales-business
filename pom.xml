@@ -27,6 +27,7 @@
         <logback.version>1.1.8</logback.version>
         <commons.collections4.version>4.1</commons.collections4.version>
         <commons.lang3.version>3.5</commons.lang3.version>
+        <statemachine.version>1.2.14.RELEASE</statemachine.version>
     </properties>
 
     <dependencyManagement>
@@ -55,6 +56,11 @@
                 <groupId>com.jingxiang</groupId>
                 <artifactId>business-product</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-core</artifactId>
+                <version>${statemachine.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
