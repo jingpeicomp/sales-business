@@ -31,7 +31,7 @@ public class FsmTransition extends FsmBaseBean {
      * @param roleName 角色名称
      * @return 下一步可执行的操作集合
      */
-    public List<FsmEvent> findAvailableEvents4Role(String roleName) {
+    public List<FsmEvent> findAvailableEventsByRole(String roleName) {
         return events.stream()
                 .filter(fsmEvent -> fsmEvent.isRoleAllowed(roleName))
                 .collect(Collectors.toList());
@@ -44,8 +44,8 @@ public class FsmTransition extends FsmBaseBean {
      * @param eventName 事件名称
      * @return 下一步可执行的操作事件, null-无
      */
-    public FsmEvent findAvailableEvents4RoleAndEvent(String roleName, String eventName) {
-        return findAvailableEvents4Role(roleName).stream()
+    public FsmEvent findAvailableEventsByRoleAndEvent(String roleName, String eventName) {
+        return findAvailableEventsByRole(roleName).stream()
                 .filter(fsmEvent -> fsmEvent.isEventAllowed(eventName))
                 .findFirst()
                 .orElse(null);
