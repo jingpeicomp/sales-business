@@ -1,6 +1,9 @@
 package com.jingxiang.business.tc.fsm;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
 
@@ -9,6 +12,9 @@ import java.util.Arrays;
  * Created by liuzhaoming on 2019/8/4.
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FsmState extends FsmBaseBean {
     /**
      * 总体状态

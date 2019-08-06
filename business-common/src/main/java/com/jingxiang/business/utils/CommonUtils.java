@@ -48,11 +48,22 @@ public final class CommonUtils {
      * @return 分割后的字符串列表
      */
     public static List<String> splitStr(String str) {
-        if (StringUtils.isEmpty(str)) {
+        return splitStr(str, ";");
+    }
+
+    /**
+     * 用指定的分隔符分割字符串
+     *
+     * @param str  待分割的字符串
+     * @param sign 分隔符
+     * @return 分割后的字符串列表
+     */
+    public static List<String> splitStr(String str, String sign) {
+        if (StringUtils.isBlank(str)) {
             return Collections.emptyList();
         }
 
-        return Arrays.asList(str.split(";"));
+        return Arrays.asList(str.split(sign));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.jingxiang.business.tc.fsm;
 
 import com.jingxiang.business.vo.Describable;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Data;
  * Created by liuzhaoming on 2019/8/5.
  */
 @Data
+@Builder
 public class FsmContext<T extends Describable> {
     /**
      * 起始状态

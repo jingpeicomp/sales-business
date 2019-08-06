@@ -1,9 +1,12 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.tc.base.consts.CompleteStatus;
-import com.jingxiang.business.tc.base.consts.PayStatus;
-import com.jingxiang.business.tc.base.consts.PayType;
-import com.jingxiang.business.tc.base.consts.ShipStatus;
+import com.jingxiang.business.tc.base.configuration.OrderFsmFactory;
+import com.jingxiang.business.tc.base.consts.*;
+import com.jingxiang.business.tc.fsm.Fsm;
+import com.jingxiang.business.tc.fsm.FsmContext;
+import com.jingxiang.business.tc.fsm.FsmState;
+import com.jingxiang.business.tc.fsm.FsmTransitionResult;
+import com.jingxiang.business.vo.Describable;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * 订单实体
@@ -21,7 +25,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_TC_ORDER")
 @Data
-public class Order implements Serializable {
+public class Order implements Serializable, Describable {
     /**
      * 订单编号
      */
@@ -38,28 +42,35 @@ public class Order implements Serializable {
     /**
      * 买家
      */
-    @Column(name = "BUYER", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '店买家铺编号'")
+    @Column(name = "BUYER", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '买家编号'")
     private String buyer;
+
+    /**
+     * 订单类型
+     */
+    @Column(name = "ORDER_TYPE", nullable = false, updatable = false, columnDefinition = "smallint comment '订单类型'")
+    @Convert(converter = OrderType.EnumConvert.class)
+    private OrderType type = OrderType.NORMAL;
 
     /**
      * 支付状态
      */
     @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '订单支付状态'")
-    @Enumerated
+    @Convert(converter = PayStatus.EnumConvert.class)
     private PayStatus payStatus;
 
     /**
      * 订单完成状态
      */
     @Column(name = "COMPLETE_STATUS", nullable = false, columnDefinition = "smallint comment '订单完成状态'")
-    @Enumerated
+    @Convert(converter = CompleteStatus.EnumConvert.class)
     private CompleteStatus completeStatus;
 
     /**
      * 订单发货状态
      */
     @Column(name = "SHIP_STATUS", nullable = false, columnDefinition = "smallint comment '订单发货状态'")
-    @Enumerated
+    @Convert(converter = ShipStatus.EnumConvert.class)
     private ShipStatus shipStatus;
 
     /**
@@ -161,9 +172,9 @@ public class Order implements Serializable {
     /**
      * 支付类型，微信支付:0;支付宝:1
      */
-    @Column(name = "PAY_TYPE", nullable = false, columnDefinition = "smallint comment '支付类型，微信支付:0;支付宝:1'")
-    @Enumerated
-    private PayType payType;
+    @Column(name = "PAY_TYPE", nullable = false, columnDefinition = "smallint comment '支付类型，微信支付:1;支付宝:2'")
+    @Convert(converter = PayType.EnumConvert.class)
+    private PayType payType = PayType.WEIXIN;
 
     /**
      * 支付单号
@@ -177,4 +188,80 @@ public class Order implements Serializable {
     @Version
     @Column(name = "VERSION", columnDefinition = "bigint comment '版本号'")
     private Long version;
+
+    /**
+     * id
+     *
+     * @return id
+     */
+    @Override
+    public String id() {
+        return id;
+    }
+
+    public FsmTransitionResult create() {
+        Fsm fsm = getFsm();
+        return null;
+    }
+
+    /**
+     * 订单状态迁移
+     *
+     * @param role      执行角色
+     * @param eventName 时间名称
+     * @return 状态迁移结果
+     */
+    private FsmTransitionResult sendEvent(Role role, String eventName) {
+        FsmContext<Order> context = buildContext(role);
+        Fsm fsm = getFsm();
+        return fsm.sendEvent(context, eventName);
+    }
+
+    /**
+     * 构造有限状态机上下文
+     *
+     * @param role 角色
+     * @return 有限状态机上下文
+     */
+    @SuppressWarnings("unchecked")
+    private FsmContext<Order> buildContext(Role role) {
+        return (FsmContext) FsmContext.builder()
+                .roleName(role.getDisplay())
+                .target(this)
+                .fromState(buildCurrentFsmState())
+                .build();
+    }
+
+    /**
+     * 构造当前订单虚拟机状态
+     *
+     * @return 订单状态
+     */
+    private FsmState buildCurrentFsmState() {
+        if (null == completeStatus) {
+            throw new IllegalArgumentException("订单完成状态不能为空");
+        }
+        if (null == payStatus) {
+            throw new IllegalArgumentException("订单支付状态不能为空");
+        }
+        if (null == shipStatus) {
+            throw new IllegalArgumentException("订单发货状态不能为空");
+        }
+
+        String[] subStates = new String[]{completeStatus.getDisplay(), payStatus.getDisplay(), shipStatus.getDisplay()};
+        // 根据子状态生成当前状态
+        return FsmState.builder()
+                .subStates(subStates)
+                .build();
+    }
+
+    /**
+     * 获取订单有限状态机
+     *
+     * @return 订单有限状态机
+     */
+    private Fsm getFsm() {
+        return Optional.ofNullable(OrderFsmFactory.getFsm(type.name()))
+                .orElseThrow(() -> new IllegalArgumentException("FSM不支持订单类型:" + type));
+    }
 }

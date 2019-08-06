@@ -7,24 +7,12 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 订单发货状态
- * Created by liuzhaoming on 2019/8/3.
+ * 订单类型
+ * Created by liuzhaoming on 2019/8/6.
  */
-public enum ShipStatus {
-    /**
-     * 未发货
-     */
-    UNSHIPPED(0, "未发货"),
+public enum OrderType {
 
-    /**
-     * 已发货
-     */
-    SHIPPED(1, "已发货"),
-
-    /**
-     * 已收货
-     */
-    RECEIVED(2, "已收货");
+    NORMAL(1, "普通订单");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率
@@ -36,7 +24,7 @@ public enum ShipStatus {
      */
     private final String display;
 
-    ShipStatus(int value, String display) {
+    OrderType(int value, String display) {
         this.value = value;
         this.display = display;
     }
@@ -50,29 +38,29 @@ public enum ShipStatus {
         return display;
     }
 
-    public static ShipStatus fromValue(int value) {
+    public static OrderType fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的订单发货状态类型值:" + value));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的订单类型值:" + value));
     }
 
-    public static ShipStatus fromDisplay(String display) {
+    public static OrderType fromDisplay(String display) {
         return Stream.of(values())
                 .filter(status -> Objects.equals(status.display, display))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的订单发货状态类型显示名称:" + display));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的订单类型显示名称:" + display));
     }
 
-    public static class EnumConvert implements AttributeConverter<ShipStatus, Integer> {
+    public static class EnumConvert implements AttributeConverter<OrderType, Integer> {
         @Override
-        public Integer convertToDatabaseColumn(ShipStatus attribute) {
+        public Integer convertToDatabaseColumn(OrderType attribute) {
             return attribute.getValue();
         }
 
         @Override
-        public ShipStatus convertToEntityAttribute(Integer dbData) {
-            return ShipStatus.fromValue(dbData);
+        public OrderType convertToEntityAttribute(Integer dbData) {
+            return OrderType.fromValue(dbData);
         }
     }
 }
