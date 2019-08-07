@@ -16,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -181,6 +182,13 @@ public class Order implements Serializable, Describable {
      */
     @Column(name = "PAYMENT_ID", columnDefinition = "varchar(32) comment '支付单号'")
     private String paymentId;
+
+    /**
+     * 订单商品条目
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID")
+    private List<OrderProduct> products;
 
     /**
      * 版本号

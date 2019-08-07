@@ -1,14 +1,21 @@
 package com.jingxiang.business.tc.order;
 
+import lombok.Data;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
  * 订单商品条目
  * Created by liuzhaoming on 2019/8/6.
  */
-public class ProductItem {
+@Entity
+@Table(name = "T_BIZ_TC_ORDER_PRODUCT")
+@Data
+public class OrderProduct {
 
     @Id
     @Column(name = "ID", columnDefinition = "varchar(32) not null comment '订单商品条目ID'")
@@ -59,8 +66,8 @@ public class ProductItem {
     /**
      * 当前的商品数量
      */
-    @Column(name = "ITEM_NUM", columnDefinition = "decimal(10,2) comment '商品数量'")
-    private BigDecimal itemNum;
+    @Column(name = "SKU_NUM", columnDefinition = "decimal(10,2) comment '商品数量'")
+    private BigDecimal skuNum;
 
     /**
      * 扣除商品级优惠后购买单价，现在等同于商品销售价

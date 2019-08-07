@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 
@@ -32,7 +33,7 @@ public class FsmState extends FsmBaseBean {
      * @return true-简单状态，false-复杂状态
      */
     public boolean isSimple() {
-        return subStates == null || subStates.length == 0;
+        return ArrayUtils.isEmpty(subStates);
     }
 
     /**
