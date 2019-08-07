@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.configuration;
+package com.jingxiang.business.tc.configuration;
 
 import com.jingxiang.business.tc.fsm.Fsm;
 import com.jingxiang.business.tc.fsm.FsmProperties;
@@ -25,7 +25,7 @@ public class OrderFsmFactory {
      *
      * @param orderTypeAndFiles 订单类型和对应的json文件
      */
-    public static void init(List<String[]> orderTypeAndFiles) {
+    static void init(List<String[]> orderTypeAndFiles) {
         orderTypeAndFiles.forEach(orderTypeAndFile -> {
             FsmProperties fsmProperties = FsmProperties.load(orderTypeAndFile[1]);
             orderTypeNameAndFsm.put(orderTypeAndFile[0], new Fsm(fsmProperties));

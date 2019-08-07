@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.consts;
+package com.jingxiang.business.tc.common.consts;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -7,19 +7,24 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 支付类型
+ * 订单完成状态
  * Created by liuzhaoming on 2019/8/3.
  */
-public enum PayType {
+public enum CompleteStatus {
     /**
-     * 微信支付
+     * 未发货
      */
-    WEIXIN(1, "微信支付"),
+    UNSHIPPED(1, "未发货"),
 
     /**
-     * 支付宝支付
+     * 已发货
      */
-    ALIPAY(2, "支付宝支付");
+    SHIPPED(2, "已发货"),
+
+    /**
+     * 已收货
+     */
+    RECEIVED(3, "已收货");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率
@@ -31,7 +36,7 @@ public enum PayType {
      */
     private final String display;
 
-    PayType(int value, String display) {
+    CompleteStatus(int value, String display) {
         this.value = value;
         this.display = display;
     }
@@ -45,29 +50,29 @@ public enum PayType {
         return display;
     }
 
-    public static PayType fromValue(int value) {
+    public static CompleteStatus fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的订单支付类型值:" + value));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的订单完成状态类型值:" + value));
     }
 
-    public static PayType fromDisplay(String display) {
+    public static CompleteStatus fromDisplay(String display) {
         return Stream.of(values())
                 .filter(status -> Objects.equals(status.display, display))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的订单支付类型显示名称:" + display));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的订单完成状态类型显示名称:" + display));
     }
 
-    public static class EnumConvert implements AttributeConverter<PayType, Integer> {
+    public static class EnumConvert implements AttributeConverter<CompleteStatus, Integer> {
         @Override
-        public Integer convertToDatabaseColumn(PayType attribute) {
+        public Integer convertToDatabaseColumn(CompleteStatus attribute) {
             return attribute.getValue();
         }
 
         @Override
-        public PayType convertToEntityAttribute(Integer dbData) {
-            return PayType.fromValue(dbData);
+        public CompleteStatus convertToEntityAttribute(Integer dbData) {
+            return CompleteStatus.fromValue(dbData);
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.consts;
+package com.jingxiang.business.tc.common.consts;
 
 /**
  * 订单状态机事件名称常量

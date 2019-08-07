@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.consts;
+package com.jingxiang.business.tc.common.consts;
 
 import javax.persistence.AttributeConverter;
 import java.util.Objects;

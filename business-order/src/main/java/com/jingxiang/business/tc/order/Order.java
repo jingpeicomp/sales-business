@@ -1,7 +1,7 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.tc.base.configuration.OrderFsmFactory;
-import com.jingxiang.business.tc.base.consts.*;
+import com.jingxiang.business.tc.common.consts.*;
+import com.jingxiang.business.tc.configuration.OrderFsmFactory;
 import com.jingxiang.business.tc.fsm.Fsm;
 import com.jingxiang.business.tc.fsm.FsmContext;
 import com.jingxiang.business.tc.fsm.FsmState;
@@ -14,7 +14,6 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -91,13 +90,6 @@ public class Order implements Serializable, Describable {
     private LocalDateTime updateTime;
 
     /**
-     * 支付时间
-     */
-    @Column(name = "PAY_TIME", columnDefinition = "datetime comment '支付时间'")
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
-    private LocalDateTime payTime;
-
-    /**
      * 订单成功时间
      */
     @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '订单成功时间'")
@@ -132,56 +124,22 @@ public class Order implements Serializable, Describable {
     private Integer autoConfirmSeconds;
 
     /**
-     * 物流费用
+     * 订单账务信息
      */
-    @Column(name = "SHIP_PRICE", columnDefinition = "decimal(10,2) comment '物流费用'")
-    private BigDecimal shipPrice = BigDecimal.ZERO;
+    @Embedded
+    private OrderAmount amount;
 
     /**
-     * 扣除优惠（商品级和订单级）后的应付总额
-     * <p>
-     * <p>扣除商品级优惠后的应付总额 - 订单级优惠总金额 - 直降总金额；现在就是各个商品价格相加</p>
+     * 收货人
      */
-    @Column(name = "TOTAL_ITEM_PRICE", columnDefinition = "decimal(20,2) comment '扣除优惠（商品级和订单级）后的应付总额'")
-    private BigDecimal totalItemPrice;
+    @Embedded
+    private OrderReceiver receiver;
 
     /**
-     * 订单总额
-     * <p>
-     * <p>扣除优惠（商品级和订单级）后的应付总额 + 物流费用</p>
-     * <p>计算公式: totalItemPrice + shipPrice</p>
+     * 支付信息
      */
-    @Column(name = "TOTAL_PRICE", columnDefinition = "decimal(20,2) comment '订单总额'")
-    private BigDecimal totalPrice;
-
-    /**
-     * 订单应付金额
-     * -- 账务应支付金额
-     * <p>
-     * <p>订单总额 - 抵扣金额（积分、充值卡等）</p>
-     */
-    @Column(name = "TOTAL_PAY_PRICE", columnDefinition = "decimal(20,2) comment '订单应付金额'")
-    private BigDecimal totalPayPrice;
-
-    /**
-     * 订单实际支付金额
-     * -- 账务已支付金额
-     */
-    @Column(name = "TOTAL_PAID_PRICE", columnDefinition = "decimal(20,2) comment '订单实际支付金额'")
-    private BigDecimal totalPaidPrice;
-
-    /**
-     * 支付类型，微信支付:0;支付宝:1
-     */
-    @Column(name = "PAY_TYPE", nullable = false, columnDefinition = "smallint comment '支付类型，微信支付:1;支付宝:2'")
-    @Convert(converter = PayType.EnumConvert.class)
-    private PayType payType = PayType.WEIXIN;
-
-    /**
-     * 支付单号
-     */
-    @Column(name = "PAYMENT_ID", columnDefinition = "varchar(32) comment '支付单号'")
-    private String paymentId;
+    @Embedded
+    private OrderPayment payment;
 
     /**
      * 订单商品条目

@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.consts;
+package com.jingxiang.business.tc.common.consts;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

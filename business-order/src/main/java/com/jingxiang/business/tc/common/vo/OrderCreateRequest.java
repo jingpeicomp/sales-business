@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.vo;
+package com.jingxiang.business.tc.common.vo;
 
 import lombok.Data;
 

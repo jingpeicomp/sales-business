@@ -45,7 +45,7 @@ public class ShippingAddress implements Serializable {
     /**
      * 收货人姓名
      */
-    @Column(name = "RECEIVER_NAME", columnDefinition = "varchar(32) comment '收货人姓名'")
+    @Column(name = "RECEIVER_NAME", columnDefinition = "varchar(64) comment '收货人姓名'")
     private String receiverName;
 
     /**

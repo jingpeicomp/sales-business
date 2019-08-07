@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.base.configuration;
+package com.jingxiang.business.tc.configuration;
 
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
