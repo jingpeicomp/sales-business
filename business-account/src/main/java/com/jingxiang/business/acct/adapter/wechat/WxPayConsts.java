@@ -3,7 +3,7 @@ package com.jingxiang.business.acct.adapter.wechat;
 /**
  * 常量
  */
-public class WxPayConstants {
+public class WxPayConsts {
 
     public enum SignType {
         MD5, HMACSHA256
