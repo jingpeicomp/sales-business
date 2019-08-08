@@ -30,5 +30,4 @@ public class SkuImage implements Serializable {
 
     @Column(name = "SORT_NO", nullable = false)
     private Integer sortNo = 1;
-
 }

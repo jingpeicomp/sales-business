@@ -1,6 +1,7 @@
 package com.jingxiang.business.product.goods;
 
 import com.jingxiang.business.exception.NotFindException;
+import com.jingxiang.business.product.base.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -66,12 +69,28 @@ public class SkuService {
     }
 
     /**
+     * 根据店铺ID和商品列表查询SKU值对象
+     *
+     * @param shopId 店铺ID
+     * @param idList SKU ID列表
+     * @return SKU值对象列表
+     */
+    @Transactional(readOnly = true, timeout = 10)
+    public List<SkuVo> queryVo(String shopId, List<String> idList) {
+        List<Sku> skuList = skuRepository.findByShopIdAndIdIn(shopId, idList);
+        return skuList.stream()
+                .map(Sku::toVo)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 推送商品到Feed流
      *
      * @param shopId 店铺ID
      * @param skuId  商品ID
      * @return 商品，如果操作失败返回null
      */
+    @Transactional(timeout = 10)
     public Sku publish(String shopId, String skuId) {
         Sku sku = skuRepository.findByIdAndShopId(skuId, shopId)
                 .orElseThrow(NotFindException::new);

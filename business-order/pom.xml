@@ -48,6 +48,10 @@
             <artifactId>business-product</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.jingxiang</groupId>
+            <artifactId>business-account</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
         </dependency>

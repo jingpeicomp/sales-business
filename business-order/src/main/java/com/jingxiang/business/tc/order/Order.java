@@ -1,6 +1,9 @@
 package com.jingxiang.business.tc.order;
 
+import com.jingxiang.business.consts.Role;
+import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.tc.common.consts.*;
+import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
 import com.jingxiang.business.tc.configuration.OrderFsmFactory;
 import com.jingxiang.business.tc.fsm.Fsm;
 import com.jingxiang.business.tc.fsm.FsmContext;
@@ -14,9 +17,11 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 订单实体
@@ -156,6 +161,20 @@ public class Order implements Serializable, Describable {
     private Long version;
 
     /**
+     * 设置订单商品信息
+     *
+     * @param products 订单商品信息
+     */
+    public void setProducts(List<OrderProduct> products) {
+        products.forEach(product -> {
+            product.setOrderId(id);
+            product.setShopId(shopId);
+            product.setBuyer(buyer);
+        });
+        this.products = products;
+    }
+
+    /**
      * id
      *
      * @return id
@@ -165,9 +184,118 @@ public class Order implements Serializable, Describable {
         return id;
     }
 
-    public FsmTransitionResult create() {
-        Fsm fsm = getFsm();
-        return null;
+    /**
+     * 订单创建
+     *
+     * @param role 角色
+     */
+    public void create(Role role) {
+        transit(role, OrderFsmEventNames.CREATE);
+    }
+
+    /**
+     * 关闭订单
+     *
+     * @param role 角色
+     */
+    public void close(Role role) {
+        transit(role, OrderFsmEventNames.CLOSE)
+    }
+
+    /**
+     * 支付订单
+     *
+     * @param role 角色
+     */
+    public void pay(Role role) {
+        transit(role, OrderFsmEventNames.PAY);
+    }
+
+    /**
+     * 订单发货
+     *
+     * @param role 角色
+     */
+    public void deliver(Role role) {
+        transit(role, OrderFsmEventNames.DELIVER);
+    }
+
+    /**
+     * 确认收货
+     *
+     * @param role 角色
+     */
+    public void confirm(Role role) {
+        transit(role, OrderFsmEventNames.CONFIRM);
+    }
+
+    /**
+     * 是否需要支付，订单应付金额是否大于0
+     *
+     * @return true 是， false 否
+     */
+    public boolean needPay() {
+        return amount.getTotalPayPrice().compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    /**
+     * 设置自动关闭和确认收货时间
+     *
+     * @param autoConfirmSeconds 多长时间（秒）后自动确认收货
+     */
+    public void initAutoTime(int autoConfirmSeconds) {
+        this.autoConfirmSeconds = autoConfirmSeconds;
+        this.autoCloseTime = LocalDateTime.now().plusSeconds(OrderConsts.ORDER_AUTO_CLOSE_TIME_IN_SECONDS);
+    }
+
+    /**
+     * 构造订单实体数据
+     *
+     * @param request 下单请求
+     * @return 订单实体数据
+     */
+    public static Order from(OrderCreateRequest request) {
+        Order order = new Order();
+        order.setId(IdFactory.createTcId(OrderConsts.ID_PREFIX_ORDER));
+        order.setShopId(request.getShopId());
+        order.setBuyer(request.getBuyer());
+        order.setPayStatus(PayStatus.UNPAID);
+        order.setCompleteStatus(CompleteStatus.UNCREATED);
+        order.setShipStatus(ShipStatus.UNSHIPPED);
+
+        OrderReceiver receiver = OrderReceiver.from(request.getReceiver());
+        order.setReceiver(receiver);
+
+        OrderPayment payment = new OrderPayment();
+        //现在只支持微信支付
+        payment.setPayType(PayType.WEIXIN);
+        order.setPayment(payment);
+
+        List<OrderProduct> products = request.getProducts().stream()
+                .map(OrderProduct::from)
+                .collect(Collectors.toList());
+        order.setProducts(products);
+
+        OrderAmount amount = new OrderAmount();
+        //邮费为0
+        amount.setShipPrice(BigDecimal.ZERO);
+        order.setAmount(amount);
+        order.calculateAmount();
+        return order;
+    }
+
+    /**
+     * 计算订单金额
+     */
+    private void calculateAmount() {
+        products.forEach(OrderProduct::calculateAmount);
+        BigDecimal totalItemPrice = products.stream()
+                .map(OrderProduct::getTotalBuyPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        amount.setTotalItemPrice(totalItemPrice);
+        BigDecimal totalPrice = totalItemPrice.add(amount.getShipPrice());
+        amount.setTotalPrice(totalPrice);
+        amount.setTotalPayPrice(totalPrice);
     }
 
     /**
@@ -177,10 +305,12 @@ public class Order implements Serializable, Describable {
      * @param eventName 时间名称
      * @return 状态迁移结果
      */
-    private FsmTransitionResult sendEvent(Role role, String eventName) {
+    private FsmTransitionResult transit(Role role, String eventName) {
         FsmContext<Order> context = buildContext(role);
         Fsm fsm = getFsm();
-        return fsm.sendEvent(context, eventName);
+        FsmTransitionResult result = fsm.sendEvent(context, eventName);
+        updateByFsmState(result.getToState());
+        return result;
     }
 
     /**
@@ -199,7 +329,7 @@ public class Order implements Serializable, Describable {
     }
 
     /**
-     * 构造当前订单虚拟机状态
+     * 构造当前订单有限状态机状态
      *
      * @return 订单状态
      */
@@ -229,5 +359,17 @@ public class Order implements Serializable, Describable {
     private Fsm getFsm() {
         return Optional.ofNullable(OrderFsmFactory.getFsm(type.name()))
                 .orElseThrow(() -> new IllegalArgumentException("FSM不支持订单类型:" + type));
+    }
+
+    /**
+     * FSM迁移状态设置
+     *
+     * @param toState fsm状态
+     */
+    private void updateByFsmState(FsmState toState) {
+        String[] subStates = toState.getSubStates();
+        completeStatus = CompleteStatus.fromDisplay(subStates[0]);
+        payStatus = PayStatus.fromDisplay(subStates[1]);
+        shipStatus = ShipStatus.fromDisplay(subStates[2]);
     }
 }

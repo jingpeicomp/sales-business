@@ -25,4 +25,9 @@ public interface OrderFsmEventNames {
      * 确认收货
      */
     String CONFIRM = "确认收货";
+
+    /**
+     * 关闭订单
+     */
+    String CLOSE = "关闭订单";
 }

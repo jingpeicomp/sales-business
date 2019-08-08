@@ -12,19 +12,24 @@ import java.util.stream.Stream;
  */
 public enum CompleteStatus {
     /**
-     * 未发货
+     * 未创建
      */
-    UNSHIPPED(1, "未发货"),
+    UNCREATED(1, "未创建"),
 
     /**
-     * 已发货
+     * 正在进行
      */
-    SHIPPED(2, "已发货"),
+    DOING(2, "正在进行"),
 
     /**
-     * 已收货
+     * 已完成
      */
-    RECEIVED(3, "已收货");
+    DONE(3, "已完成"),
+
+    /**
+     * 已作废
+     */
+    CANCELED(4, "已作废");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率

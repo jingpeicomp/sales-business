@@ -8,6 +8,7 @@
         <module>business-product</module>
         <module>business-order</module>
         <module>business-account</module>
+        <module>business-app</module>
     </modules>
 
     <parent>
@@ -57,9 +58,9 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.springframework.statemachine</groupId>
-                <artifactId>spring-statemachine-core</artifactId>
-                <version>${statemachine.version}</version>
+                <groupId>com.jingxiang</groupId>
+                <artifactId>business-account</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
