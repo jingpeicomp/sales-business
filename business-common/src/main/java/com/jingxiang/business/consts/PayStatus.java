@@ -1,4 +1,4 @@
-package com.jingxiang.business.tc.common.consts;
+package com.jingxiang.business.consts;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -7,29 +7,29 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 订单支付状态
+ * 支付状态
  * Created by liuzhaoming on 2019/8/3.
  */
 public enum PayStatus {
     /**
      * 未支付
      */
-    UNPAID(0, "未支付"),
+    UNPAID(1, "未支付"),
 
     /**
      * 支付中
      */
-    PAYING(1, "支付中"),
+    PAYING(2, "支付中"),
 
     /**
      * 支付失败
      */
-    FAILED(2, "支付失败"),
+    FAILED(3, "支付失败"),
 
     /**
      * 已支付
      */
-    PAID(3, "已支付");
+    PAID(4, "已支付");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率

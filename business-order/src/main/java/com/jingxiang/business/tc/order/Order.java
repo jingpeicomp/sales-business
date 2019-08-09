@@ -1,5 +1,7 @@
 package com.jingxiang.business.tc.order;
 
+import com.jingxiang.business.consts.PayStatus;
+import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.tc.common.consts.*;
@@ -189,8 +191,8 @@ public class Order implements Serializable, Describable {
      *
      * @param role 角色
      */
-    public void create(Role role) {
-        transit(role, OrderFsmEventNames.CREATE);
+    public FsmTransitionResult create(Role role) {
+        return transit(role, OrderFsmEventNames.CREATE);
     }
 
     /**
@@ -198,8 +200,8 @@ public class Order implements Serializable, Describable {
      *
      * @param role 角色
      */
-    public void close(Role role) {
-        transit(role, OrderFsmEventNames.CLOSE)
+    public FsmTransitionResult close(Role role) {
+        return transit(role, OrderFsmEventNames.CLOSE);
     }
 
     /**
@@ -207,8 +209,8 @@ public class Order implements Serializable, Describable {
      *
      * @param role 角色
      */
-    public void pay(Role role) {
-        transit(role, OrderFsmEventNames.PAY);
+    public FsmTransitionResult pay(Role role) {
+        return transit(role, OrderFsmEventNames.PAY);
     }
 
     /**
@@ -216,8 +218,8 @@ public class Order implements Serializable, Describable {
      *
      * @param role 角色
      */
-    public void deliver(Role role) {
-        transit(role, OrderFsmEventNames.DELIVER);
+    public FsmTransitionResult deliver(Role role) {
+        return transit(role, OrderFsmEventNames.DELIVER);
     }
 
     /**
@@ -225,8 +227,8 @@ public class Order implements Serializable, Describable {
      *
      * @param role 角色
      */
-    public void confirm(Role role) {
-        transit(role, OrderFsmEventNames.CONFIRM);
+    public FsmTransitionResult confirm(Role role) {
+        return transit(role, OrderFsmEventNames.CONFIRM);
     }
 
     /**

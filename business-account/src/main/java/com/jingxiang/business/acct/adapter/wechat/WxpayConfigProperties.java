@@ -1,15 +1,23 @@
 package com.jingxiang.business.acct.adapter.wechat;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static com.jingxiang.business.acct.adapter.wechat.WxpayConsts.SignType;
 
 /**
  * 微信支付配置参数
  * Created by liuzhaoming on 2019/8/8.
  */
 @Data
+@Slf4j
 @ConfigurationProperties("jingxiang.business.acct.wxpay")
 public class WxpayConfigProperties {
 
@@ -49,11 +57,35 @@ public class WxpayConfigProperties {
     private int readTimeoutInMills = 15000;
 
     /**
+     * 是否使用沙箱
+     */
+    private boolean useSandbox = false;
+
+    /**
+     * 加密方式
+     */
+    private SignType signType = SignType.MD5;
+
+    /**
+     * 用户证书文件地址
+     */
+    private String certFile;
+
+    /**
      * 获取商户证书内容
      *
      * @return 商户证书内容
      */
     public InputStream getCertStream() {
-        return null;
+        if (StringUtils.isBlank(certFile)) {
+            return null;
+        }
+
+        try {
+            return Files.newInputStream(Paths.get(certFile));
+        } catch (IOException e) {
+            log.error("Cannot load cert file {}", certFile, e);
+            return null;
+        }
     }
 }

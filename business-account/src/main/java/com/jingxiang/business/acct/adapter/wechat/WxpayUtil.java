@@ -21,11 +21,11 @@ import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.util.*;
 
-import static com.jingxiang.business.acct.adapter.wechat.WxPayConsts.SignType;
+import static com.jingxiang.business.acct.adapter.wechat.WxpayConsts.SignType;
 
 
 @Slf4j
-public class WxPayUtil {
+public class WxpayUtil {
     /**
      * XML格式字符串转换为Map
      *
@@ -107,7 +107,7 @@ public class WxPayUtil {
      */
     public static String generateSignedXml(final Map<String, String> data, String key, SignType signType) {
         String sign = generateSignature(data, key, signType);
-        data.put(WxPayConsts.FIELD_SIGN, sign);
+        data.put(WxpayConsts.FIELD_SIGN, sign);
         return mapToXml(data);
     }
 
@@ -121,10 +121,10 @@ public class WxPayUtil {
      */
     public static boolean isSignatureValid(String xmlStr, String key) {
         Map<String, String> data = xmlToMap(xmlStr);
-        if (!data.containsKey(WxPayConsts.FIELD_SIGN)) {
+        if (!data.containsKey(WxpayConsts.FIELD_SIGN)) {
             return false;
         }
-        String sign = data.get(WxPayConsts.FIELD_SIGN);
+        String sign = data.get(WxpayConsts.FIELD_SIGN);
         return generateSignature(data, key).equals(sign);
     }
 
@@ -148,10 +148,10 @@ public class WxPayUtil {
      * @return 签名是否正确
      */
     public static boolean isSignatureValid(Map<String, String> data, String key, SignType signType) {
-        if (!data.containsKey(WxPayConsts.FIELD_SIGN)) {
+        if (!data.containsKey(WxpayConsts.FIELD_SIGN)) {
             return false;
         }
-        String sign = data.get(WxPayConsts.FIELD_SIGN);
+        String sign = data.get(WxpayConsts.FIELD_SIGN);
         return generateSignature(data, key, signType).equals(sign);
     }
 
@@ -180,7 +180,7 @@ public class WxPayUtil {
         Arrays.sort(keyArray);
         StringBuilder sb = new StringBuilder();
         for (String k : keyArray) {
-            if (k.equals(WxPayConsts.FIELD_SIGN)) {
+            if (k.equals(WxpayConsts.FIELD_SIGN)) {
                 continue;
             }
             if (data.get(k).trim().length() > 0) // 参数值为空，则不参与签名

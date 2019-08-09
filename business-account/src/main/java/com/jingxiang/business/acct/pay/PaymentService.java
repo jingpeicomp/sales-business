@@ -1,6 +1,8 @@
 package com.jingxiang.business.acct.pay;
 
+import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,14 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PaymentService {
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     /**
      * 创建支付单
      *
      * @return 支付单
      */
     @Transactional(timeout = 10)
-    public Payment create() {
-        return null;
+    public Payment create(PaymentCreateRequest request) {
+        Payment payment = Payment.from(request);
+        return paymentRepository.save(payment);
     }
 
     /**

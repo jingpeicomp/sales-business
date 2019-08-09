@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.tc.common.consts.PayType;
+import com.jingxiang.business.consts.PayType;
 import lombok.Data;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
@@ -40,12 +40,12 @@ public class OrderPayment implements Serializable {
     /**
      * 支付平台的支付单号
      */
-    @Column(name = "TRADE_NO")
+    @Column(name = "TRADE_NO", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
     private String platformPayId;
 
     /**
      * 支付网关预支付单ID，只有微信支付有
      */
-    @Column(name = "PRE_PAY_ID")
+    @Column(name = "PRE_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
     private String prePlatformPayId;
 }

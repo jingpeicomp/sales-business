@@ -11,4 +11,8 @@ public interface AccountConsts {
      */
     String ID_PREFIX_SHIPPING_ADDRESS = "CA";
 
+    /**
+     * 支付单ID前缀
+     */
+    String ID_PREFIX_PAYMENT = "CP";
 }
