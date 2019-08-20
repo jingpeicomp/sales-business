@@ -1,6 +1,9 @@
 package com.jingxiang.business.acct.common.vo.address;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,6 +12,9 @@ import java.io.Serializable;
  * Created by liuzhaoming on 2019/8/20.
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentOperateRequest implements Serializable {
     /**
      * 店铺ID

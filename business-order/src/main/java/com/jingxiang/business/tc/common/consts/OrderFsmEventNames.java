@@ -17,6 +17,16 @@ public interface OrderFsmEventNames {
     String PAY = "支付";
 
     /**
+     * 支付回调通知成功
+     */
+    String PAY_NOTIFY_SUCCESS = "支付回调通知成功";
+
+    /**
+     * 支付回调通知失败
+     */
+    String PAY_NOTIFY_FAIL = "支付回调通知失败";
+
+    /**
      * 发货
      */
     String DELIVER = "发货";

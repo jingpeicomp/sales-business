@@ -1,14 +1,14 @@
 package com.jingxiang.business.tc.order;
 
+import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
+import com.jingxiang.business.acct.common.vo.address.PaymentOperateRequest;
+import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.acct.pay.PayService;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.product.base.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
-import com.jingxiang.business.tc.common.vo.order.OrderCloseRequest;
-import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
-import com.jingxiang.business.tc.common.vo.order.OrderPayRequest;
-import com.jingxiang.business.tc.common.vo.order.OrderProductParam;
+import com.jingxiang.business.tc.common.vo.order.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,15 +50,21 @@ public class OrderService {
         Order order = Order.from(request);
         order.create(Role.BUYER);
         order.initAutoTime(OrderConsts.ORDER_AUTO_CONFIRM_TIME_IN_SECONDS);
-        orderRepository.save(order);
 
         if (order.needPay()) {
             //创建支付单
-            paymentService.create();
-            order.pay(Role.BUYER);
-            return orderRepository.save(order);
+            PaymentCreateRequest createRequest = PaymentCreateRequest.builder()
+                    .buyer(order.getBuyer())
+                    .orderId(order.getId())
+                    .payAmount(order.getAmount().getTotalPayPrice())
+                    .payType(order.getPayment().getPayType())
+                    .shopId(order.getShopId())
+                    .title(order.calculateTitle())
+                    .build();
+            PaymentVo paymentVo = paymentService.create(createRequest);
+            order.updatePayment(paymentVo);
         }
-        return order;
+        return orderRepository.save(order);
     }
 
     /**
@@ -77,7 +83,11 @@ public class OrderService {
         Order order = optional.get();
         order.close(request.getRole());
         if (order.needPay()) {
-            paymentService.cancel();
+            PaymentOperateRequest operateRequest = PaymentOperateRequest.builder()
+                    .paymentId(order.getPayment().getPayId())
+                    .shopId(order.getShopId())
+                    .build();
+            paymentService.cancel(operateRequest);
         }
         return orderRepository.save(order);
     }
@@ -96,6 +106,44 @@ public class OrderService {
         }
 
         Order order = optional.get();
+        if (order.needPay()) {
+            order.pay(Role.BUYER);
+            PaymentOperateRequest operateRequest = PaymentOperateRequest.builder()
+                    .paymentId(order.getPayment().getPayId())
+                    .shopId(order.getShopId())
+                    .build();
+            PaymentVo paymentVo = paymentService.pay(operateRequest);
+            order.updatePayment(paymentVo);
+            return orderRepository.save(order);
+        }
 
+        return order;
+    }
+
+    /**
+     * 订单支付结果回调
+     *
+     * @param request 订单支付结果回调
+     * @return 订单
+     */
+    public Order paid(OrderPaidRequest request) {
+        Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
+        if (!optional.isPresent()) {
+            log.error("Modify order paid result fail, because cannot find order {}", request);
+            throw new IllegalArgumentException("无法修改支付结果，因为找不到对应的订单" + request);
+        }
+
+        Order order = optional.get();
+        if (order.needPay()) {
+            if (request.isSuccessful()) {
+                order.paidSuccess(request.getRole());
+            } else {
+                order.paidFail(request.getRole());
+            }
+            order.updatePayment(request.getVo());
+            return orderRepository.save(order);
+        }
+
+        return order;
     }
 }

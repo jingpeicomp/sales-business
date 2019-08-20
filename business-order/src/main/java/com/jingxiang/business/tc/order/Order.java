@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.tc.common.consts.PayStatus;
+import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;
@@ -13,6 +13,7 @@ import com.jingxiang.business.tc.fsm.FsmState;
 import com.jingxiang.business.tc.fsm.FsmTransitionResult;
 import com.jingxiang.business.vo.Describable;
 import lombok.Data;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
@@ -214,6 +215,26 @@ public class Order implements Serializable, Describable {
     }
 
     /**
+     * 订单支付成功通知
+     *
+     * @param role 角色
+     */
+    public FsmTransitionResult paidSuccess(Role role) {
+        return transit(role, OrderFsmEventNames.PAY_NOTIFY_SUCCESS);
+    }
+
+
+    /**
+     * 订单支付失败通知
+     *
+     * @param role 角色
+     */
+    public FsmTransitionResult paidFail(Role role) {
+        return transit(role, OrderFsmEventNames.PAY_NOTIFY_FAIL);
+    }
+
+
+    /**
      * 订单发货
      *
      * @param role 角色
@@ -248,6 +269,40 @@ public class Order implements Serializable, Describable {
     public void initAutoTime(int autoConfirmSeconds) {
         this.autoConfirmSeconds = autoConfirmSeconds;
         this.autoCloseTime = LocalDateTime.now().plusSeconds(OrderConsts.ORDER_AUTO_CLOSE_TIME_IN_SECONDS);
+    }
+
+    /**
+     * 更新支付单信息
+     *
+     * @param paymentVo 支付单信息
+     */
+    public void updatePayment(PaymentVo paymentVo) {
+        payment.updatePayment(paymentVo);
+    }
+
+    /**
+     * 获取订单标题
+     *
+     * @return 订单标题
+     */
+    public String calculateTitle() {
+        String title = id + getProductDesc();
+        return title.substring(60);
+    }
+
+    /**
+     * 获取订单商品描述
+     *
+     * @return 订单商品描述信息
+     */
+    private String getProductDesc() {
+        if (CollectionUtils.isEmpty(products)) {
+            return "";
+        }
+
+        return products.stream()
+                .map(product -> product.getSkuName() + "*" + product.getSkuNum())
+                .collect(Collectors.joining(";"));
     }
 
     /**

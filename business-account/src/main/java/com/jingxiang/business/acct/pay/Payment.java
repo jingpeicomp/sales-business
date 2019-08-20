@@ -4,6 +4,7 @@ import com.jingxiang.business.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.acct.common.consts.AccountConsts;
 import com.jingxiang.business.acct.common.consts.PaymentStatus;
 import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
+import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.id.IdFactory;
@@ -83,7 +84,6 @@ public class Payment implements Serializable {
     /**
      * 修改时间
      */
-    @LastModifiedDate
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     @Column(name = "PAY_TIME", columnDefinition = "datetime comment '支付时间'")
     private LocalDateTime payTime;
@@ -145,6 +145,10 @@ public class Payment implements Serializable {
             throw new ServiceException("已经支付成功的支付单不允许取消");
         }
 
+        if (status == PaymentStatus.PAYING) {
+            throw new ServiceException("正在支付中的支付单不允许取消");
+        }
+
         setStatus(PaymentStatus.CANCELED);
     }
 
@@ -155,6 +159,30 @@ public class Payment implements Serializable {
      */
     public boolean canPay() {
         return status == PaymentStatus.UNPAID || status == PaymentStatus.FAILED;
+    }
+
+    /**
+     * 返回支付单值对象
+     *
+     * @return 支付单值对象
+     */
+    public PaymentVo toVo() {
+        return PaymentVo.builder()
+                .id(id)
+                .shopId(shopId)
+                .buyer(buyer)
+                .payType(payType)
+                .payAmount(payAmount)
+                .orderId(orderId)
+                .payTime(payTime)
+                .status(status)
+                .title(title)
+                .description(description)
+                .platformPayId(platformPayId)
+                .prePlatformPayId(prePlatformPayId)
+                .updateTime(updateTime)
+                .createTime(createTime)
+                .build();
     }
 
     /**

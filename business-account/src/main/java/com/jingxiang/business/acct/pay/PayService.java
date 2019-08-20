@@ -4,6 +4,7 @@ import com.jingxiang.business.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.acct.adapter.wechat.WxpayService;
 import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
 import com.jingxiang.business.acct.common.vo.address.PaymentOperateRequest;
+import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.exception.NotFindException;
 import com.jingxiang.business.exception.ServiceException;
@@ -37,9 +38,9 @@ public class PayService {
      * @return 支付单
      */
     @Transactional(timeout = 10)
-    public Payment create(PaymentCreateRequest request) {
+    public PaymentVo create(PaymentCreateRequest request) {
         Payment payment = Payment.from(request);
-        return paymentRepository.save(payment);
+        return paymentRepository.save(payment).toVo();
     }
 
     /**
@@ -48,11 +49,11 @@ public class PayService {
      * @return 支付单
      */
     @Transactional(timeout = 10)
-    public Payment cancel(PaymentOperateRequest request) {
+    public PaymentVo cancel(PaymentOperateRequest request) {
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
                 .orElseThrow(() -> new NotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         payment.cancel();
-        return paymentRepository.save(payment);
+        return paymentRepository.save(payment).toVo();
     }
 
     /**
@@ -61,7 +62,7 @@ public class PayService {
      * @return 支付单
      */
     @Transactional(timeout = 10)
-    public Payment pay(PaymentOperateRequest request) {
+    public PaymentVo pay(PaymentOperateRequest request) {
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
                 .orElseThrow(() -> new NotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         if (!payment.canPay()) {
@@ -72,7 +73,7 @@ public class PayService {
         if (payment.getPayType() == PayType.WEIXIN) {
             String prePlatformPayId = wxpayService.pay(payment);
             payment.setPrePlatformPayId(prePlatformPayId);
-            return paymentRepository.save(payment);
+            return paymentRepository.save(payment).toVo();
         }
         throw new ServiceException("支付单" + payment.getId() + "不支持该支付类型");
     }
@@ -85,8 +86,8 @@ public class PayService {
      * @return 符合条件的支付单
      */
     @Transactional(timeout = 10, readOnly = true)
-    public Optional<Payment> queryByIdAndOrderId(String id, String orderId) {
-        return paymentRepository.findByIdAndOrderId(id, orderId);
+    public Optional<PaymentVo> queryByIdAndOrderId(String id, String orderId) {
+        return paymentRepository.findByIdAndOrderId(id, orderId).map(Payment::toVo);
     }
 
     /**
