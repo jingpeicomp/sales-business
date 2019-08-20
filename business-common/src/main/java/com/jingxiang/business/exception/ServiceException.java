@@ -1,10 +1,20 @@
 package com.jingxiang.business.exception;
 
+import com.jingxiang.business.utils.MessageSourceUtil;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 /**
  * 业务通用异常
  * Created by liuzhaoming on 2019/8/2.
  */
 public class ServiceException extends RuntimeException {
+
+    /**
+     * 默认异常
+     */
+    private static final String DEFAULT_ERROR_CODE = "T-000001";
+
+    private String errorCode;
 
     /**
      * Constructs a new runtime exception with the specified detail message.
@@ -15,7 +25,7 @@ public class ServiceException extends RuntimeException {
      *                later retrieval by the {@link #getMessage()} method.
      */
     public ServiceException(String message) {
-        super(message);
+        this(DEFAULT_ERROR_CODE, message);
     }
 
     /**
@@ -34,6 +44,20 @@ public class ServiceException extends RuntimeException {
      */
     public ServiceException(String message, Throwable cause) {
         super(message, cause);
+        this.errorCode = DEFAULT_ERROR_CODE;
+    }
+
+    public ServiceException(String errorCode, String... args) {
+        this(errorCode, MessageSourceUtil.getMessage(errorCode, args, LocaleContextHolder.getLocale()));
+    }
+
+    private ServiceException(String errorCode, String message) {
+        super(message == null ? errorCode : message);
+        this.errorCode = errorCode;
+    }
+
+    public String getErrorCode() {
+        return this.errorCode;
     }
 
     @Override

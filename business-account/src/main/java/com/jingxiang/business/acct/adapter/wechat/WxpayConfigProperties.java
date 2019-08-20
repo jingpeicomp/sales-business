@@ -1,5 +1,6 @@
 package com.jingxiang.business.acct.adapter.wechat;
 
+import com.jingxiang.business.utils.CommonUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +45,7 @@ public class WxpayConfigProperties {
     /**
      * 本地IP
      */
-    private String localIp = "localhost";
+    private String localIp;
 
     /**
      * 连接请求超时时间
@@ -70,6 +71,14 @@ public class WxpayConfigProperties {
      * 用户证书文件地址
      */
     private String certFile;
+
+    public String getLocalIp() {
+        if (StringUtils.isBlank(localIp)) {
+            return CommonUtils.getLocalIp();
+        }
+
+        return localIp;
+    }
 
     /**
      * 获取商户证书内容

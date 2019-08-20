@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.acct.pay.PaymentService;
+import com.jingxiang.business.acct.pay.PayService;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.product.base.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
@@ -31,7 +31,7 @@ public class OrderService {
     private SkuService skuService;
 
     @Autowired
-    private PaymentService paymentService;
+    private PayService paymentService;
 
     /**
      * 买家下单接口

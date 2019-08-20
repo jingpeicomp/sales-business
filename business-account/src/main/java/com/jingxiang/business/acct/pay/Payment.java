@@ -1,9 +1,11 @@
 package com.jingxiang.business.acct.pay;
 
+import com.jingxiang.business.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.acct.common.consts.AccountConsts;
+import com.jingxiang.business.acct.common.consts.PaymentStatus;
 import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
-import com.jingxiang.business.consts.PayStatus;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.id.IdFactory;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -47,6 +49,7 @@ public class Payment implements Serializable {
      */
     @Column(name = "BUYER", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '买家编号'")
     private String buyer;
+
 
     /**
      * 支付类型，微信支付:0;支付宝:1
@@ -98,11 +101,11 @@ public class Payment implements Serializable {
     private String prePlatformPayId;
 
     /**
-     * 支付单支付状态
+     * 支付单状态
      */
-    @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '支付状态'")
-    @Convert(converter = PayStatus.EnumConvert.class)
-    private PayStatus payStatus = PayStatus.UNPAID;
+    @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '支付单状态'")
+    @Convert(converter = PaymentStatus.EnumConvert.class)
+    private PaymentStatus status = PaymentStatus.UNPAID;
 
     /**
      * 支付单标题，会显示在支付平台
@@ -113,7 +116,7 @@ public class Payment implements Serializable {
     /**
      * 支付单描述
      */
-    @Column(name = "DESCRIPTION", columnDefinition = "varchar(100) comment '支付单描述'")
+    @Column(name = "DESCRIPTION", columnDefinition = "varchar(200) comment '支付单描述'")
     private String description;
 
     /**
@@ -122,6 +125,37 @@ public class Payment implements Serializable {
     @Version
     @Column(name = "VERSION", columnDefinition = "bigint comment '版本号'")
     private Long version;
+
+    /**
+     * 更新微信支付成功回调信息
+     *
+     * @param request 微信支付回调信息
+     */
+    public void updateWxpaySuccessNotification(WxpayNotifyRequest request) {
+        setPlatformPayId(request.getTransactionId());
+        setStatus(PaymentStatus.PAID);
+        setPayTime(LocalDateTime.now());
+    }
+
+    /**
+     * 取消支付单
+     */
+    public void cancel() {
+        if (status == PaymentStatus.PAID) {
+            throw new ServiceException("已经支付成功的支付单不允许取消");
+        }
+
+        setStatus(PaymentStatus.CANCELED);
+    }
+
+    /**
+     * 订单是否可以支付， 只有未支付或者支付失败的支付单才可以支付
+     *
+     * @return boolean 可以支付返回true，反之false
+     */
+    public boolean canPay() {
+        return status == PaymentStatus.UNPAID || status == PaymentStatus.FAILED;
+    }
 
     /**
      * 根据支付单创建请求创建支付单

@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.consts.PayStatus;
+import com.jingxiang.business.tc.common.consts.PayStatus;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;

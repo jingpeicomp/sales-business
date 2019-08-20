@@ -6,16 +6,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 通用工具类
@@ -27,6 +31,14 @@ public final class CommonUtils {
      * 读取有限状态机规则配置文件（JSON格式）并转换成Fsm对象
      */
     private static final ObjectMapper OBJECT_MAPPER;
+
+    private static final String LOCALHOST = "127.0.0.1";
+
+    private static final String ANY_HOST = "0.0.0.0";
+
+    private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
+
+    private static String LOCAL_IP;
 
     static {
         JsonFactory jf = new JsonFactory();
@@ -137,5 +149,82 @@ public final class CommonUtils {
         }
 
         return null;
+    }
+
+    /**
+     * 获取格式化的价格，精确到小数点后两位，单位为元
+     *
+     * @param fee 价格
+     * @return 价格字符串
+     */
+    public static String formatDownFee(BigDecimal fee) {
+        if (null == fee) {
+            return "0.00";
+        }
+
+        return fee.setScale(2, BigDecimal.ROUND_DOWN).toString();
+    }
+
+    /**
+     * 获取本地IP
+     *
+     * @return 本地IP
+     */
+    public static String getLocalIp() {
+        if (StringUtils.isBlank(LOCAL_IP)) {
+            synchronized (LOCALHOST) {
+                if (StringUtils.isBlank(LOCAL_IP)) {
+                    LOCAL_IP = calculateLocalIP();
+                }
+            }
+        }
+        return LOCAL_IP;
+    }
+
+    /**
+     * 获取本地IP地址
+     *
+     * @return 本地IP地址
+     */
+    private static String calculateLocalIP() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            if (null != interfaces) {
+                while (interfaces.hasMoreElements()) {
+                    NetworkInterface network = interfaces.nextElement();
+                    Enumeration<InetAddress> addresses = network.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        try {
+                            InetAddress address = addresses.nextElement();
+                            if (isValidAddress(address)) {
+                                return address.getHostAddress();
+                            }
+                        } catch (Exception e) {
+                            return LOCALHOST;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return LOCALHOST;
+        }
+
+        return LOCALHOST;
+    }
+
+    /**
+     * 是否是正确的IP地址
+     *
+     * @param address IP地址
+     * @return IP是否合法，合法返回true，反之false
+     */
+    private static boolean isValidAddress(InetAddress address) {
+        if (address == null || address.isLoopbackAddress())
+            return false;
+        String name = address.getHostAddress();
+        return (name != null
+                && !ANY_HOST.equals(name)
+                && !LOCALHOST.equals(name)
+                && IP_PATTERN.matcher(name).matches());
     }
 }
