@@ -14,17 +14,17 @@ public enum ShipStatus {
     /**
      * 未发货
      */
-    UNSHIPPED(0, "未发货"),
+    UNSHIPPED(1, "未发货"),
 
     /**
      * 已发货
      */
-    SHIPPED(1, "已发货"),
+    SHIPPED(2, "已发货"),
 
     /**
      * 已收货
      */
-    RECEIVED(2, "已收货");
+    RECEIVED(3, "已收货");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率

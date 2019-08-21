@@ -2,6 +2,7 @@ package com.jingxiang.business.tc.order;
 
 import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.tc.common.vo.order.OrderPaymentVo;
 import lombok.Data;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Embeddable
 public class OrderPayment implements Serializable {
     /**
-     * 支付类型，微信支付:0;支付宝:1
+     * 支付类型，微信支付:1;支付宝:2
      */
     @Column(name = "PAY_TYPE", nullable = false, columnDefinition = "smallint comment '支付类型，微信支付:1;支付宝:2'")
     @Convert(converter = PayType.EnumConvert.class)
@@ -60,5 +61,20 @@ public class OrderPayment implements Serializable {
         payTime = vo.getPayTime();
         platformPayId = vo.getPlatformPayId();
         prePlatformPayId = vo.getPrePlatformPayId();
+    }
+
+    /**
+     * 转化为值对象
+     *
+     * @return 值对象
+     */
+    public OrderPaymentVo toVo() {
+        return OrderPaymentVo.builder()
+                .payId(payId)
+                .payTime(payTime)
+                .payType(payType)
+                .platformPayId(platformPayId)
+                .prePlatformPayId(prePlatformPayId)
+                .build();
     }
 }

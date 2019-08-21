@@ -1,18 +1,24 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
-import com.jingxiang.business.acct.common.vo.address.PaymentOperateRequest;
 import com.jingxiang.business.acct.common.vo.address.PaymentVo;
+import com.jingxiang.business.acct.common.vo.payment.PaymentCreateRequest;
+import com.jingxiang.business.acct.common.vo.payment.PaymentOperateRequest;
 import com.jingxiang.business.acct.pay.PayService;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.product.base.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
+import com.jingxiang.business.tc.common.consts.OrderStatus;
 import com.jingxiang.business.tc.common.vo.order.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +45,7 @@ public class OrderService {
      * @param request 下单请求
      * @return 订单
      */
+    @Transactional(timeout = 10)
     public Order create(OrderCreateRequest request) {
         List<String> skuIds = request.getProducts().stream()
                 .map(OrderProductParam::getSkuId)
@@ -73,7 +80,8 @@ public class OrderService {
      * @param request 订单关闭请求
      * @return 订单
      */
-    public Order close(OrderCloseRequest request) {
+    @Transactional(timeout = 10)
+    public Order close(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
             log.error("Close order fail, because cannot find order {}", request);
@@ -98,7 +106,8 @@ public class OrderService {
      * @param request 订单支付请求
      * @return 订单
      */
-    public Order pay(OrderPayRequest request) {
+    @Transactional(timeout = 10)
+    public Order pay(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
             log.error("Pay order fail, because cannot find order {}", request);
@@ -126,6 +135,7 @@ public class OrderService {
      * @param request 订单支付结果回调
      * @return 订单
      */
+    @Transactional(timeout = 10)
     public Order paid(OrderPaidRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -145,5 +155,109 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    /**
+     * 卖家发货
+     *
+     * @param request 订单操作请求
+     * @return 订单发货
+     */
+    @Transactional(timeout = 10)
+    public Order deliver(OrderOperateRequest request) {
+        Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
+        if (!optional.isPresent()) {
+            log.error("Deliver order fail, because cannot find order {}", request);
+            throw new IllegalArgumentException("订单无法发货，因为找不到对应的订单" + request);
+        }
+
+        Order order = optional.get();
+        order.deliver(Role.SELLER);
+        order.initShipTime();
+        return orderRepository.save(order);
+    }
+
+    /**
+     * 确认收货
+     *
+     * @param request 订单操作请求
+     * @return 订单确认收货
+     */
+    @Transactional(timeout = 10)
+    public Order confirm(OrderOperateRequest request) {
+        Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
+        if (!optional.isPresent()) {
+            log.error("Confirm order fail, because cannot find order {}", request);
+            throw new IllegalArgumentException("订单确认收货，因为找不到对应的订单" + request);
+        }
+
+        Order order = optional.get();
+        order.confirm(request.getRole());
+        order.setConfirmTime(LocalDateTime.now());
+        return orderRepository.save(order);
+    }
+
+    /**
+     * 根据查询条件查询订单
+     *
+     * @param condition 订单查询条件
+     * @return 符合条件的订单列表
+     */
+    @Transactional(timeout = 10, readOnly = true)
+    public Page<OrderVo> query(OrderQueryCondition condition) {
+        Pageable pageRequest = new PageRequest(condition.getPage(), condition.getSize(), Sort.Direction.DESC, "createTime");
+        OrderStatus orderStatus = OrderStatus.fromValue(condition.getOrderStatus());
+        Page<Order> orderPage;
+        if (StringUtils.isNotBlank(condition.getShopId())) {
+            orderPage = querySellerOrderByStatus(condition.getShopId(), orderStatus, pageRequest);
+        } else {
+            orderPage = queryBuyerOrderByStatus(condition.getBuyer(), orderStatus, pageRequest);
+        }
+
+        return orderPage.map(Order::toVo);
+    }
+
+    /**
+     * 根据订单状态查询买家订单
+     *
+     * @param buyer       买家
+     * @param orderStatus 订单状态
+     * @param pageRequest 分页请求
+     * @return 订单列表
+     */
+    private Page<Order> queryBuyerOrderByStatus(String buyer, OrderStatus orderStatus, Pageable pageRequest) {
+        switch (orderStatus) {
+            case WAIT_PAY:
+                return orderRepository.findBuyerWaitPayOrders(buyer, pageRequest);
+            case WAIT_SHIP:
+                return orderRepository.findBuyerWaitShipOrders(buyer, pageRequest);
+            case WAIT_RECEIVE:
+                return orderRepository.findBuyerWaitReceiveOrders(buyer, pageRequest);
+            case RECEIVED:
+                return orderRepository.findBuyerCompleteOrders(buyer, pageRequest);
+            default:
+                return new PageImpl<>(Collections.emptyList());
+        }
+    }
+
+    /**
+     * 根据订单状态查询卖家订单
+     *
+     * @param shopId      店铺编号
+     * @param orderStatus 订单状态
+     * @param pageRequest 分页请求
+     * @return 订单列表
+     */
+    private Page<Order> querySellerOrderByStatus(String shopId, OrderStatus orderStatus, Pageable pageRequest) {
+        switch (orderStatus) {
+            case WAIT_SHIP:
+                return orderRepository.findSellerWaitDealOrders(shopId, pageRequest);
+            case WAIT_RECEIVE:
+                return orderRepository.findSellerWaitReceiveOrders(shopId, pageRequest);
+            case RECEIVED:
+                return orderRepository.findSellerCompleteOrders(shopId, pageRequest);
+            default:
+                return new PageImpl<>(Collections.emptyList());
+        }
     }
 }

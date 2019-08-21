@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.fsm;
 
-import com.jingxiang.business.vo.Describable;
+import com.jingxiang.business.base.Describable;
 
 import java.io.Serializable;
 

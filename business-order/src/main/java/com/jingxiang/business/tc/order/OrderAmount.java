@@ -1,5 +1,6 @@
 package com.jingxiang.business.tc.order;
 
+import com.jingxiang.business.tc.common.vo.order.OrderAmountVo;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -52,4 +53,14 @@ public class OrderAmount implements Serializable{
      */
     @Column(name = "TOTAL_PAID_PRICE", columnDefinition = "decimal(20,2) comment '订单实际支付金额'")
     private BigDecimal totalPaidPrice;
+
+    public OrderAmountVo toVo(){
+        return OrderAmountVo.builder()
+                .shipPrice(shipPrice)
+                .totalItemPrice(totalItemPrice)
+                .totalPrice(totalPrice)
+                .totalPayPrice(totalPayPrice)
+                .totalPaidPrice(totalPaidPrice)
+                .build();
+    }
 }

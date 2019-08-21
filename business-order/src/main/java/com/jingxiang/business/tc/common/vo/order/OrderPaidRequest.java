@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 订单支付结果请求
@@ -47,4 +48,9 @@ public class OrderPaidRequest implements Serializable {
      * 操作对象
      */
     private Role role;
+
+    /**
+     * 支付金额
+     */
+    private BigDecimal paidPrice;
 }

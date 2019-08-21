@@ -1,4 +1,4 @@
-package com.jingxiang.business.vo;
+package com.jingxiang.business.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

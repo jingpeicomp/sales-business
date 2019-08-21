@@ -1,17 +1,18 @@
 package com.jingxiang.business.tc.order;
 
 import com.jingxiang.business.acct.common.vo.address.PaymentVo;
+import com.jingxiang.business.base.Describable;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.tc.common.consts.*;
 import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
+import com.jingxiang.business.tc.common.vo.order.OrderVo;
 import com.jingxiang.business.tc.configuration.OrderFsmFactory;
 import com.jingxiang.business.tc.fsm.Fsm;
 import com.jingxiang.business.tc.fsm.FsmContext;
 import com.jingxiang.business.tc.fsm.FsmState;
 import com.jingxiang.business.tc.fsm.FsmTransitionResult;
-import com.jingxiang.business.vo.Describable;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.annotation.CreatedDate;
@@ -117,6 +118,13 @@ public class Order implements Serializable, Describable {
     @Column(name = "SHIP_TIME", columnDefinition = "datetime comment '卖家发货时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime shipTime;
+
+    /**
+     * 确认收货时间
+     */
+    @Column(name = "CONFIRM_TIME", columnDefinition = "datetime comment '确认收货时间'")
+    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    private LocalDateTime confirmTime;
 
     /**
      * 确认收货自动时间
@@ -262,13 +270,21 @@ public class Order implements Serializable, Describable {
     }
 
     /**
-     * 设置自动关闭和确认收货时间
+     * 设置自动关闭和确认收货时长
      *
      * @param autoConfirmSeconds 多长时间（秒）后自动确认收货
      */
     public void initAutoTime(int autoConfirmSeconds) {
         this.autoConfirmSeconds = autoConfirmSeconds;
         this.autoCloseTime = LocalDateTime.now().plusSeconds(OrderConsts.ORDER_AUTO_CLOSE_TIME_IN_SECONDS);
+    }
+
+    /**
+     * 设置自动确认收货时间
+     */
+    public void initShipTime() {
+        this.shipTime = LocalDateTime.now();
+        this.autoConfirmTime = shipTime.plusSeconds(autoConfirmSeconds);
     }
 
     /**
@@ -288,6 +304,35 @@ public class Order implements Serializable, Describable {
     public String calculateTitle() {
         String title = id + getProductDesc();
         return title.substring(60);
+    }
+
+    /**
+     * 生成订单值对象
+     *
+     * @return 订单值对象
+     */
+    public OrderVo toVo() {
+        return OrderVo.builder()
+                .autoCloseTime(autoCloseTime)
+                .autoConfirmSeconds(autoConfirmSeconds)
+                .autoConfirmTime(autoConfirmTime)
+                .buyer(buyer)
+                .completeStatus(completeStatus)
+                .createTime(createTime)
+                .finishTime(finishTime)
+                .confirmTime(confirmTime)
+                .id(id)
+                .payStatus(payStatus)
+                .shipStatus(shipStatus)
+                .shipTime(shipTime)
+                .shopId(shopId)
+                .type(type)
+                .updateTime(updateTime)
+                .amount(amount.toVo())
+                .payment(payment.toVo())
+                .receiver(receiver.toVo())
+                .products(products.stream().map(OrderProduct::toVo).collect(Collectors.toList()))
+                .build();
     }
 
     /**

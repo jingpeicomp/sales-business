@@ -1,4 +1,4 @@
-package com.jingxiang.business.acct.common.vo.address;
+package com.jingxiang.business.acct.common.vo.payment;
 
 import com.jingxiang.business.consts.PayType;
 import lombok.AllArgsConstructor;

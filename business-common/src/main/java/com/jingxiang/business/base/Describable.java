@@ -1,4 +1,4 @@
-package com.jingxiang.business.vo;
+package com.jingxiang.business.base;
 
 /**
  * 可用ID描述

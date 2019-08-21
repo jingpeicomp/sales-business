@@ -2,8 +2,8 @@ package com.jingxiang.business.acct.pay;
 
 import com.jingxiang.business.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.acct.adapter.wechat.WxpayService;
-import com.jingxiang.business.acct.common.vo.address.PaymentCreateRequest;
-import com.jingxiang.business.acct.common.vo.address.PaymentOperateRequest;
+import com.jingxiang.business.acct.common.vo.payment.PaymentCreateRequest;
+import com.jingxiang.business.acct.common.vo.payment.PaymentOperateRequest;
 import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.exception.NotFindException;
@@ -114,5 +114,9 @@ public class PayService {
         payment.updateWxpaySuccessNotification(request);
         paymentRepository.save(payment);
         return wxpayService.buildSuccessNotifyResponse();
+    }
+
+    private void updateOrderPayment(Payment payment){
+
     }
 }
