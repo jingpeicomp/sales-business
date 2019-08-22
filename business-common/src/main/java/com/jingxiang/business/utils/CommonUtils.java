@@ -166,6 +166,20 @@ public final class CommonUtils {
     }
 
     /**
+     * 将分转化为BigDecimal
+     *
+     * @param feeString 整数字符串，单位为分
+     * @return BigDecimal
+     */
+    public static BigDecimal fromDownFee(String feeString) {
+        if (StringUtils.isBlank(feeString)) {
+            return BigDecimal.ZERO;
+        }
+
+        return new BigDecimal(feeString).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_DOWN);
+    }
+
+    /**
      * 获取本地IP
      *
      * @return 本地IP

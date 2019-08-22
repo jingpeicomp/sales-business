@@ -40,5 +40,4 @@ public class NotificationController {
 
         return payService.updateWxpayNotification(parsedRequest);
     }
-
 }

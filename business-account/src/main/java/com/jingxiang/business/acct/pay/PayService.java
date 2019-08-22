@@ -2,12 +2,15 @@ package com.jingxiang.business.acct.pay;
 
 import com.jingxiang.business.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.acct.adapter.wechat.WxpayService;
+import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.acct.common.vo.payment.PaymentOperateRequest;
-import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.NotFindException;
 import com.jingxiang.business.exception.ServiceException;
+import com.jingxiang.business.tc.common.vo.order.OrderPaidRequest;
+import com.jingxiang.business.tc.order.OrderService;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,9 @@ public class PayService {
 
     @Autowired
     private WxpayService wxpayService;
+
+    @Autowired
+    private OrderService orderService;
 
     /**
      * 创建支付单
@@ -107,16 +113,53 @@ public class PayService {
         Payment payment = paymentOptional.get();
         BigDecimal dbAmount = payment.getPayAmount();
         if (!Objects.equals(request.getPayAmount(), CommonUtils.formatDownFee(dbAmount))) {
-            log.error("Wxpay notify fail..... pay amount is invalid by id {} and order id {}", request.getPaymentId(), request.getOrderId());
+            log.error("Wxpay notify fail..... pay amount is invalid by id {} and order id {}, {}", request.getPaymentId(), request.getOrderId(), request);
+            wxpayPaidFail(request, payment);
             return wxpayService.buildFailNotifyResponse("Pay amount is invalid");
         }
 
-        payment.updateWxpaySuccessNotification(request);
-        paymentRepository.save(payment);
+        wxpayPaidSuccessfully(request, payment);
         return wxpayService.buildSuccessNotifyResponse();
     }
 
-    private void updateOrderPayment(Payment payment){
+    /**
+     * 支付单微信支付成功
+     *
+     * @param request 微信回调请求
+     * @param payment 支付单
+     */
+    private void wxpayPaidSuccessfully(WxpayNotifyRequest request, Payment payment) {
+        payment.updateWxpaySuccessNotification(request);
+        paymentRepository.save(payment);
+        OrderPaidRequest paidRequest = OrderPaidRequest.builder()
+                .paidPrice(payment.getPaidAmount())
+                .orderId(payment.getOrderId())
+                .shopId(payment.getShopId())
+                .successful(true)
+                .vo(payment.toVo())
+                .role(Role.BUYER)
+                .build();
+        orderService.paid(paidRequest);
+    }
 
+    /**
+     * 支付单微信支付失败
+     *
+     * @param request 微信回调请求
+     * @param payment 支付单
+     */
+    private void wxpayPaidFail(WxpayNotifyRequest request, Payment payment) {
+        payment.updateWxpayFailNotification(request);
+        paymentRepository.save(payment);
+        OrderPaidRequest paidRequest = OrderPaidRequest.builder()
+                .paidPrice(payment.getPaidAmount())
+                .orderId(payment.getOrderId())
+                .shopId(payment.getShopId())
+                .successful(false)
+                .vo(payment.toVo())
+                .role(Role.BUYER)
+                .message(request.getErrorMessage())
+                .build();
+        orderService.paid(paidRequest);
     }
 }

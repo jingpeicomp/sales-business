@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -92,4 +94,22 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      */
     @Query("select t from Order t where t.shopId=?0 and t.completeStatus=3")
     Page<Order> findSellerCompleteOrders(String shopId, Pageable pageable);
+
+    /**
+     * 查找需要自动关闭的订单
+     *
+     * @param deadlineTIme 截止时间
+     * @return 订单列表
+     */
+    @Query("select t from Order t where t.payStatus <> 4 and t.createTime <= ?0")
+    List<Order> findNeedAutoCloseOrders(LocalDateTime deadlineTIme);
+
+    /**
+     * 查询需要自动确认收货的订单
+     *
+     * @param now 当前时间
+     * @return 订单
+     */
+    @Query("select t from Order t where t.payStatus=4 and t.shipStatus=2 and t.autoConfirmTime <= ?0")
+    List<Order> findNeedAutoConfirmOrders(LocalDateTime now);
 }

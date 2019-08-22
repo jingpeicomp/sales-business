@@ -218,6 +218,27 @@ public class OrderService {
     }
 
     /**
+     * 查询需要自动关闭的订单列表
+     *
+     * @return 需要关闭的订单列表
+     */
+    @Transactional(timeout = 10, readOnly = true)
+    public List<Order> queryNeedAutoCloseOrders() {
+        LocalDateTime datelineTime = LocalDateTime.now().plusSeconds(OrderConsts.ORDER_AUTO_CLOSE_TIME_IN_SECONDS);
+        return orderRepository.findNeedAutoCloseOrders(datelineTime);
+    }
+
+    /**
+     * 查询需要自动确认收货的订单列表
+     *
+     * @return 需要自动确认收货的订单列表
+     */
+    @Transactional(timeout = 10, readOnly = true)
+    public List<Order> queryNeedAutoConfirmOrders() {
+        return orderRepository.findNeedAutoConfirmOrders(LocalDateTime.now());
+    }
+
+    /**
      * 根据订单状态查询买家订单
      *
      * @param buyer       买家

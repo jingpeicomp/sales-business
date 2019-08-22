@@ -89,8 +89,7 @@ public class WxpayService {
             String paymentId = requestData.get("attach");
             //支付单总金额，单位为分
             String totalFee = requestData.get("total_fee");
-            String formattedTotalFee = new BigDecimal(totalFee)
-                    .divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_DOWN)
+            String formattedTotalFee = CommonUtils.fromDownFee(totalFee)
                     .toString();
             return WxpayNotifyRequest.builder()
                     .orderId(orderId)

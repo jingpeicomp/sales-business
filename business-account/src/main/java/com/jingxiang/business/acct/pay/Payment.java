@@ -8,6 +8,7 @@ import com.jingxiang.business.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.id.IdFactory;
+import com.jingxiang.business.utils.CommonUtils;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -64,6 +65,12 @@ public class Payment implements Serializable {
      */
     @Column(name = "PAY_AMOUNT", columnDefinition = "decimal(20,2) comment '应付金额'")
     private BigDecimal payAmount;
+
+    /**
+     * 实付金额
+     */
+    @Column(name = "PAID_AMOUNT", columnDefinition = "decimal(20,2) comment '实付金额'")
+    private BigDecimal paidAmount;
 
     /**
      * 创建时间
@@ -134,6 +141,19 @@ public class Payment implements Serializable {
     public void updateWxpaySuccessNotification(WxpayNotifyRequest request) {
         setPlatformPayId(request.getTransactionId());
         setStatus(PaymentStatus.PAID);
+        setPaidAmount(payAmount);
+        setPayTime(LocalDateTime.now());
+    }
+
+    /**
+     * 更新微信支付失败回调信息，主要是金额不对
+     *
+     * @param request 微信支付回调信息
+     */
+    public void updateWxpayFailNotification(WxpayNotifyRequest request) {
+        setPlatformPayId(request.getTransactionId());
+        setStatus(PaymentStatus.FAILED);
+        setPaidAmount(new BigDecimal(request.getPayAmount()));
         setPayTime(LocalDateTime.now());
     }
 

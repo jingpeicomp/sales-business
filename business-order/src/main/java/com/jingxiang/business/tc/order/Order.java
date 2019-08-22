@@ -160,7 +160,7 @@ public class Order implements Serializable, Describable {
     /**
      * 订单商品条目
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "ORDER_ID", referencedColumnName = "ID")
     private List<OrderProduct> products;
 
