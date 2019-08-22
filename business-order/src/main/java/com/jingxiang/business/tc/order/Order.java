@@ -1,18 +1,19 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.base.Describable;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.tc.common.consts.*;
 import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
+import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderVo;
 import com.jingxiang.business.tc.configuration.OrderFsmFactory;
 import com.jingxiang.business.tc.fsm.Fsm;
 import com.jingxiang.business.tc.fsm.FsmContext;
 import com.jingxiang.business.tc.fsm.FsmState;
 import com.jingxiang.business.tc.fsm.FsmTransitionResult;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.annotation.CreatedDate;
@@ -290,10 +291,21 @@ public class Order implements Serializable, Describable {
     /**
      * 更新支付单信息
      *
+     * @param paidRequest 已支付请求
+     */
+    public void updatePayment(OrderPaidRequest paidRequest) {
+        payment.updatePayment(paidRequest);
+        amount.setTotalPaidPrice(paidRequest.getPaidPrice());
+    }
+
+    /**
+     * 更新支付单信息
+     *
      * @param paymentVo 支付单信息
      */
     public void updatePayment(PaymentVo paymentVo) {
         payment.updatePayment(paymentVo);
+        amount.setTotalPaidPrice(paymentVo.getPaidAmount());
     }
 
     /**

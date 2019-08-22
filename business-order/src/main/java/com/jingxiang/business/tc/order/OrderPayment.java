@@ -1,8 +1,9 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.acct.common.vo.address.PaymentVo;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderPaymentVo;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
@@ -50,6 +51,18 @@ public class OrderPayment implements Serializable {
      */
     @Column(name = "PRE_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
     private String prePlatformPayId;
+
+    /**
+     * 更新支付单信息
+     *
+     * @param paidRequest 已支付请求
+     */
+    public void updatePayment(OrderPaidRequest paidRequest) {
+        payId = paidRequest.getPaymentId();
+        payTime = paidRequest.getPayTime();
+        platformPayId = paidRequest.getPlatformPayId();
+        prePlatformPayId = paidRequest.getPrePlatformPayId();
+    }
 
     /**
      * 更新支付单信息

@@ -7,7 +7,7 @@
         <module>business-common</module>
         <module>business-product</module>
         <module>business-order</module>
-        <module>business-account</module>
+        <module>business-user</module>
         <module>business-app</module>
     </modules>
 
@@ -59,7 +59,7 @@
             </dependency>
             <dependency>
                 <groupId>com.jingxiang</groupId>
-                <artifactId>business-account</artifactId>
+                <artifactId>business-user</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

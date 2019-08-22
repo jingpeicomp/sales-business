@@ -9,15 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>business-order</artifactId>
-    <name>business-order</name>
-    <description>Jingxiang Business Order</description>
+    <artifactId>business-user</artifactId>
+    <name>business-user</name>
+    <description>Jingxiang Business User Module</description>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -28,32 +27,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-java8</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.jingxiang</groupId>
             <artifactId>business-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jingxiang</groupId>
-            <artifactId>business-product</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jingxiang</groupId>
-            <artifactId>business-user</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
         </dependency>
     </dependencies>
+
 </project>

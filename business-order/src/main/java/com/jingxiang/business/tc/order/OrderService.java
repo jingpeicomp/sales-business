@@ -1,15 +1,17 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.acct.common.vo.address.PaymentVo;
-import com.jingxiang.business.acct.common.vo.payment.PaymentCreateRequest;
-import com.jingxiang.business.acct.common.vo.payment.PaymentOperateRequest;
-import com.jingxiang.business.acct.pay.PayService;
+import com.jingxiang.business.api.order.OrderApi;
+import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.product.base.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
 import com.jingxiang.business.tc.common.consts.OrderStatus;
 import com.jingxiang.business.tc.common.vo.order.*;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentOperateRequest;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.pay.PayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class OrderService {
+public class OrderService implements OrderApi {
     @Autowired
     private OrderRepository orderRepository;
 
@@ -133,10 +135,10 @@ public class OrderService {
      * 订单支付结果回调
      *
      * @param request 订单支付结果回调
-     * @return 订单
      */
+    @Override
     @Transactional(timeout = 10)
-    public Order paid(OrderPaidRequest request) {
+    public void paid(OrderPaidRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
             log.error("Modify order paid result fail, because cannot find order {}", request);
@@ -150,11 +152,9 @@ public class OrderService {
             } else {
                 order.paidFail(request.getRole());
             }
-            order.updatePayment(request.getVo());
-            return orderRepository.save(order);
+            order.updatePayment(request);
+            orderRepository.save(order);
         }
-
-        return order;
     }
 
     /**
