@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Created by liuzhaoming on 2019/8/21.
  */
 @Data
-public class OrderOperateRequest implements Serializable{
+public class OrderOperateRequest implements Serializable {
     /**
      * 店铺ID
      */

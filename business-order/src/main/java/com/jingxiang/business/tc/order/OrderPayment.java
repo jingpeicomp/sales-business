@@ -1,7 +1,7 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.api.order.OrderPaidRequest;
+import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.tc.common.vo.order.OrderPaymentVo;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;

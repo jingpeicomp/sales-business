@@ -1,8 +1,8 @@
 package com.jingxiang.business.user.uc.address;
 
+import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.user.acct.common.consts.AcctConsts;
 import com.jingxiang.business.user.uc.common.vo.address.ShippingAddressVo;
-import com.jingxiang.business.id.IdFactory;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.CreatedDate;

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Embeddable
-public class OrderAmount implements Serializable{
+public class OrderAmount implements Serializable {
     /**
      * 物流费用
      */
@@ -54,7 +54,7 @@ public class OrderAmount implements Serializable{
     @Column(name = "TOTAL_PAID_PRICE", columnDefinition = "decimal(20,2) comment '订单实际支付金额'")
     private BigDecimal totalPaidPrice;
 
-    public OrderAmountVo toVo(){
+    public OrderAmountVo toVo() {
         return OrderAmountVo.builder()
                 .shipPrice(shipPrice)
                 .totalItemPrice(totalItemPrice)

@@ -34,7 +34,7 @@ public enum PaymentStatus {
     /**
      * 已作废
      */
-    CANCELED(100,"已作废");
+    CANCELED(100, "已作废");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率

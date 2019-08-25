@@ -9,5 +9,5 @@ import java.io.Serializable;
  * Created by liuzhaoming on 2019/8/8.
  */
 @Data
-public class OrderPayResponse implements Serializable{
+public class OrderPayResponse implements Serializable {
 }

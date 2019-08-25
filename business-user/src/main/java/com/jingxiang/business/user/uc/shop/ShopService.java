@@ -37,7 +37,7 @@ public class ShopService {
      * @param id 店铺ID
      * @return 对应的店铺值对象
      */
-    @Transactional(timeout = 10,readOnly = true)
+    @Transactional(timeout = 10, readOnly = true)
     public Optional<ShopVo> queryVoById(String id) {
         return Optional.ofNullable(shopRepository.findOne(id))
                 .map(Shop::toVo);

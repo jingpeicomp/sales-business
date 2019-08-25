@@ -1,6 +1,5 @@
 package com.jingxiang.business.id.generator;
 
-import com.jingxiang.business.id.generator.IdGenerator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

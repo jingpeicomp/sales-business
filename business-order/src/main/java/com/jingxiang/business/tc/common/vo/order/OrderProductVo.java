@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderProductVo implements Serializable{
+public class OrderProductVo implements Serializable {
     private String id;
 
     /**

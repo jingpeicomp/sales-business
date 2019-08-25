@@ -1,12 +1,12 @@
 package com.jingxiang.business.tc.order;
 
+import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.base.Describable;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.tc.common.consts.*;
 import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
-import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderVo;
 import com.jingxiang.business.tc.configuration.OrderFsmFactory;
 import com.jingxiang.business.tc.fsm.Fsm;

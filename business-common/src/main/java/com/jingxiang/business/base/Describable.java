@@ -7,6 +7,7 @@ package com.jingxiang.business.base;
 public interface Describable {
     /**
      * id
+     *
      * @return id
      */
     String id();
