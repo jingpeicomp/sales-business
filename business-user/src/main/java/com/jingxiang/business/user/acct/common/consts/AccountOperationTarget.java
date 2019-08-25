@@ -7,34 +7,24 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 支付单状态
- * Created by liuzhaoming on 2019/8/3.
+ * 账户操作目标
+ * Created by liuzhaoming on 2019/8/25.
  */
-public enum PaymentStatus {
+public enum AccountOperationTarget {
     /**
-     * 未支付
+     * 账户余额
      */
-    UNPAID(1, "未支付"),
+    BALANCE(1, "账户余额"),
 
     /**
-     * 支付中
+     * 服务费
      */
-    PAYING(2, "支付中"),
+    SERVICE_FEE(2, "服务费"),
 
     /**
-     * 支付失败
+     * 银行手续费
      */
-    FAILED(3, "支付失败"),
-
-    /**
-     * 已支付
-     */
-    PAID(4, "已支付"),
-
-    /**
-     * 已作废
-     */
-    CANCELED(100,"已作废");
+    BANK_FEE(3, "银行手续费");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率
@@ -46,7 +36,7 @@ public enum PaymentStatus {
      */
     private final String display;
 
-    PaymentStatus(int value, String display) {
+    AccountOperationTarget(int value, String display) {
         this.value = value;
         this.display = display;
     }
@@ -60,29 +50,29 @@ public enum PaymentStatus {
         return display;
     }
 
-    public static PaymentStatus fromValue(int value) {
+    public static AccountOperationTarget fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单状态类型值:" + value));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的账户操作目标类型值:" + value));
     }
 
-    public static PaymentStatus fromDisplay(String display) {
+    public static AccountOperationTarget fromDisplay(String display) {
         return Stream.of(values())
                 .filter(status -> Objects.equals(status.display, display))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单状态类型显示名称:" + display));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的账户操作目标类型显示名称:" + display));
     }
 
-    public static class EnumConvert implements AttributeConverter<PaymentStatus, Integer> {
+    public static class EnumConvert implements AttributeConverter<AccountOperationTarget, Integer> {
         @Override
-        public Integer convertToDatabaseColumn(PaymentStatus attribute) {
+        public Integer convertToDatabaseColumn(AccountOperationTarget attribute) {
             return attribute.getValue();
         }
 
         @Override
-        public PaymentStatus convertToEntityAttribute(Integer dbData) {
-            return PaymentStatus.fromValue(dbData);
+        public AccountOperationTarget convertToEntityAttribute(Integer dbData) {
+            return AccountOperationTarget.fromValue(dbData);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.jingxiang.business.user.uc.address;
 
-import com.jingxiang.business.user.acct.common.consts.AccountConsts;
+import com.jingxiang.business.user.acct.common.consts.AcctConsts;
 import com.jingxiang.business.user.uc.common.vo.address.ShippingAddressVo;
 import com.jingxiang.business.id.IdFactory;
 import lombok.Data;
@@ -146,7 +146,7 @@ public class ShippingAddress implements Serializable {
         shippingAddress.setReceiverAddress(vo.getReceiverAddress());
 
         if (StringUtils.isBlank(vo.getId())) {
-            shippingAddress.setId(IdFactory.createAcctId(AccountConsts.ID_PREFIX_SHIPPING_ADDRESS));
+            shippingAddress.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_SHIPPING_ADDRESS));
         }
 
         return shippingAddress;

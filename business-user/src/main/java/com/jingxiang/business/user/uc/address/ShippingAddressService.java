@@ -1,7 +1,7 @@
 package com.jingxiang.business.user.uc.address;
 
-import com.jingxiang.business.user.acct.common.consts.AccountConsts;
 import com.jingxiang.business.id.IdFactory;
+import com.jingxiang.business.user.uc.common.vo.address.UserConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +59,7 @@ public class ShippingAddressService {
                     shippingAddress.setDef(true);
                 }
             }
-            shippingAddress.setId(IdFactory.createAcctId(AccountConsts.ID_PREFIX_SHIPPING_ADDRESS));
+            shippingAddress.setId(IdFactory.createUserId(UserConsts.ID_PREFIX_SHIPPING_ADDRESS));
         } else {
             Optional<ShippingAddress> addressOptional = repository.findDefault(shippingAddress.getAccountId());
             if (!addressOptional.isPresent() || addressOptional.get().getId().equals(shippingAddress.getId())) {

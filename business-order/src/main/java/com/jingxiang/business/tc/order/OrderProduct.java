@@ -1,7 +1,7 @@
 package com.jingxiang.business.tc.order;
 
 import com.jingxiang.business.id.IdFactory;
-import com.jingxiang.business.product.base.vo.SkuVo;
+import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
 import com.jingxiang.business.tc.common.vo.order.OrderProductParam;
 import com.jingxiang.business.tc.common.vo.order.OrderProductVo;

@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.common.vo.order;
 
-import com.jingxiang.business.product.base.vo.SkuVo;
+import com.jingxiang.business.product.common.vo.SkuVo;
 import lombok.Data;
 
 import java.io.Serializable;

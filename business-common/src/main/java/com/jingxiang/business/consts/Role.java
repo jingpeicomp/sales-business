@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 订单操作角色
+ * 系统操作角色
  * <p>
  * Created by liuzhaoming on 2019/8/6.
  */
@@ -35,7 +35,13 @@ public enum Role {
     /**
      * 平台
      */
-    SYSTEM(5, "平台");
+    SYSTEM(5, "平台"),
+
+    /**
+     * 合伙人
+     */
+    PARTNER(6, "合伙人");
+
 
     private int value;
 

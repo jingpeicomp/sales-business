@@ -1,6 +1,7 @@
 package com.jingxiang.business.user.acct.common.vo.payment;
 
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.user.acct.common.consts.PaymentSource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -52,4 +53,9 @@ public class PaymentCreateRequest implements Serializable {
      * 支付单描述
      */
     private String description;
+
+    /**
+     * 支付单来源
+     */
+    private PaymentSource source = PaymentSource.ORDER_PAY;
 }

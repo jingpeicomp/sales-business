@@ -6,6 +6,7 @@ import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.NotFindException;
 import com.jingxiang.business.exception.ServiceException;
+import com.jingxiang.business.user.acct.account.AccountService;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayService;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
@@ -36,7 +37,10 @@ public class PayService {
     private WxpayService wxpayService;
 
     @Autowired
-    private OrderApi orderService;
+    private OrderApi orderApi;
+
+    @Autowired
+    private AccountService accountService;
 
     /**
      * 创建支付单
@@ -142,7 +146,8 @@ public class PayService {
                 .payTime(payment.getPayTime())
                 .role(Role.BUYER)
                 .build();
-        orderService.paid(paidRequest);
+        orderApi.paid(paidRequest);
+        accountService.orderPaid(payment.toVo());
     }
 
     /**
@@ -166,6 +171,6 @@ public class PayService {
                 .role(Role.BUYER)
                 .message(request.getErrorMessage())
                 .build();
-        orderService.paid(paidRequest);
+        orderApi.paid(paidRequest);
     }
 }

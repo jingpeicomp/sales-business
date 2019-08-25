@@ -1,13 +1,14 @@
 package com.jingxiang.business.user.acct.pay;
 
-import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
-import com.jingxiang.business.user.acct.common.consts.AccountConsts;
-import com.jingxiang.business.user.acct.common.consts.PaymentStatus;
-import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
-import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.id.IdFactory;
+import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
+import com.jingxiang.business.user.acct.common.consts.AcctConsts;
+import com.jingxiang.business.user.acct.common.consts.PaymentSource;
+import com.jingxiang.business.user.acct.common.consts.PaymentStatus;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
+import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -23,7 +24,7 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/8.
  */
 @Entity
-@Table(name = "T_BIZ_ACCT_PAYMENT")
+@Table(name = "T_BIZ_UC_PAYMENT")
 @Data
 public class Payment implements Serializable {
     /**
@@ -48,8 +49,14 @@ public class Payment implements Serializable {
     /**
      * 付款者
      */
-    @Column(name = "BUYER", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '买家编号'")
-    private String buyer;
+    @Column(name = "PAYER", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '付款者'")
+    private String payer;
+
+    /**
+     * 收款者
+     */
+    @Column(name = "PAYEE", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '收款者'")
+    private String payee;
 
 
     /**
@@ -70,6 +77,13 @@ public class Payment implements Serializable {
      */
     @Column(name = "PAID_AMOUNT", columnDefinition = "decimal(20,2) comment '实付金额'")
     private BigDecimal paidAmount;
+
+    /**
+     * 支付单来源
+     */
+    @Column(name = "SOURCE", nullable = false, updatable = false, columnDefinition = "smallint comment '支付单来源'")
+    @Convert(converter = PaymentSource.EnumConvert.class)
+    private PaymentSource source;
 
     /**
      * 创建时间
@@ -189,7 +203,8 @@ public class Payment implements Serializable {
         return PaymentVo.builder()
                 .id(id)
                 .shopId(shopId)
-                .buyer(buyer)
+                .payer(payer)
+                .payee(payee)
                 .payType(payType)
                 .payAmount(payAmount)
                 .paidAmount(paidAmount)
@@ -202,6 +217,7 @@ public class Payment implements Serializable {
                 .prePlatformPayId(prePlatformPayId)
                 .updateTime(updateTime)
                 .createTime(createTime)
+                .source(source)
                 .build();
     }
 
@@ -213,14 +229,15 @@ public class Payment implements Serializable {
      */
     public static Payment from(PaymentCreateRequest request) {
         Payment payment = new Payment();
-        payment.setId(IdFactory.createAcctId(AccountConsts.ID_PREFIX_PAYMENT));
-        payment.setBuyer(request.getBuyer());
+        payment.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_PAYMENT));
+        payment.setPayer(request.getBuyer());
         payment.setShopId(request.getShopId());
         payment.setPayType(request.getPayType());
         payment.setPayAmount(request.getPayAmount());
         payment.setOrderId(request.getOrderId());
         payment.setTitle(request.getTitle());
         payment.setDescription(request.getDescription());
+        payment.setSource(request.getSource());
         return payment;
     }
 }

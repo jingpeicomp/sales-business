@@ -7,34 +7,30 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 支付单状态
- * Created by liuzhaoming on 2019/8/3.
+ * 支付单来源
+ * Created by liuzhaoming on 2019/8/25.
  */
-public enum PaymentStatus {
+public enum PaymentSource {
     /**
-     * 未支付
+     * 订单付款
      */
-    UNPAID(1, "未支付"),
+    ORDER_PAY(1, "订单付款"),
 
     /**
-     * 支付中
+     * 服务费充值
      */
-    PAYING(2, "支付中"),
+    SF_DEPOSIT(2, "服务费充值"),
 
     /**
-     * 支付失败
+     * 提现
      */
-    FAILED(3, "支付失败"),
+    WITHDRAWAL(3, "提现"),
 
     /**
-     * 已支付
+     * 服务费提现
      */
-    PAID(4, "已支付"),
+    SF_WITHDRAWAL(4, "服务费提现");
 
-    /**
-     * 已作废
-     */
-    CANCELED(100,"已作废");
 
     /**
      * 枚举对应的值，主要用于数据库和前端，提高效率
@@ -46,7 +42,7 @@ public enum PaymentStatus {
      */
     private final String display;
 
-    PaymentStatus(int value, String display) {
+    PaymentSource(int value, String display) {
         this.value = value;
         this.display = display;
     }
@@ -60,29 +56,29 @@ public enum PaymentStatus {
         return display;
     }
 
-    public static PaymentStatus fromValue(int value) {
+    public static PaymentSource fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单状态类型值:" + value));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单来源类型值:" + value));
     }
 
-    public static PaymentStatus fromDisplay(String display) {
+    public static PaymentSource fromDisplay(String display) {
         return Stream.of(values())
                 .filter(status -> Objects.equals(status.display, display))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单状态类型显示名称:" + display));
+                .orElseThrow(() -> new IllegalArgumentException("不支持的支付单来源类型显示名称:" + display));
     }
 
-    public static class EnumConvert implements AttributeConverter<PaymentStatus, Integer> {
+    public static class EnumConvert implements AttributeConverter<PaymentSource, Integer> {
         @Override
-        public Integer convertToDatabaseColumn(PaymentStatus attribute) {
+        public Integer convertToDatabaseColumn(PaymentSource attribute) {
             return attribute.getValue();
         }
 
         @Override
-        public PaymentStatus convertToEntityAttribute(Integer dbData) {
-            return PaymentStatus.fromValue(dbData);
+        public PaymentSource convertToEntityAttribute(Integer dbData) {
+            return PaymentSource.fromValue(dbData);
         }
     }
 }

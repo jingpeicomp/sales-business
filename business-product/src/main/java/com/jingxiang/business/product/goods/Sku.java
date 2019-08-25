@@ -1,7 +1,9 @@
 package com.jingxiang.business.product.goods;
 
-import com.jingxiang.business.product.base.vo.SkuCreateRequest;
-import com.jingxiang.business.product.base.vo.SkuVo;
+import com.jingxiang.business.id.IdFactory;
+import com.jingxiang.business.product.common.consts.ProductConsts;
+import com.jingxiang.business.product.common.vo.SkuCreateRequest;
+import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -111,7 +113,7 @@ public class Sku implements Serializable {
     /**
      * 商品描述图片URL列表，多个图片列表用“;”分隔
      */
-    @Column(length = 1000,  columnDefinition = "varchar(1000) comment '商品描述图片URL列表，多个图片列表用;分隔'")
+    @Column(length = 1000, columnDefinition = "varchar(1000) comment '商品描述图片URL列表，多个图片列表用;分隔'")
     private String images;
 
     /**
@@ -154,6 +156,7 @@ public class Sku implements Serializable {
      */
     public static Sku fromCreateRequest(String shopId, SkuCreateRequest request) {
         Sku sku = new Sku();
+        sku.setId(IdFactory.createProductId(ProductConsts.ID_PREFIX_SKU));
         sku.setName(request.getName());
         sku.setShopId(shopId);
         sku.setUnit(request.getUnit());

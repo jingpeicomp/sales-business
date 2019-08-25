@@ -195,7 +195,7 @@ public class WxpayService {
         unifiedData.put("body", payment.getTitle());
         unifiedData.put("attach", payment.getId());
         unifiedData.put("out_trade_no", payment.getOrderId());
-        unifiedData.put("device_info", payment.getBuyer());
+        unifiedData.put("device_info", payment.getPayer());
         unifiedData.put("fee_type", "CNY");
         unifiedData.put("total_fee", CommonUtils.formatDownFee(payment.getPayAmount()));
         unifiedData.put("spbill_create_ip", wxpayConfigProperties.getLocalIp());

@@ -3,7 +3,7 @@ package com.jingxiang.business.tc.order;
 import com.jingxiang.business.api.order.OrderApi;
 import com.jingxiang.business.api.order.OrderPaidRequest;
 import com.jingxiang.business.consts.Role;
-import com.jingxiang.business.product.base.vo.SkuVo;
+import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
 import com.jingxiang.business.tc.common.consts.OrderStatus;

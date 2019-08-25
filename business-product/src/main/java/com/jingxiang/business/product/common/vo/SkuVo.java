@@ -1,4 +1,4 @@
-package com.jingxiang.business.product.base.vo;
+package com.jingxiang.business.product.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.user.acct.common.consts.PaymentSource;
 import com.jingxiang.business.user.acct.common.consts.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,13 +44,23 @@ public class PaymentVo implements Serializable {
     /**
      * 付款者
      */
-    private String buyer;
+    private String payer;
+
+    /**
+     * 收款者
+     */
+    private String payee;
 
 
     /**
      * 支付类型，微信支付:0;支付宝:1
      */
     private PayType payType;
+
+    /**
+     * 支付单来源
+     */
+    private PaymentSource source;
 
     /**
      * 应付金额

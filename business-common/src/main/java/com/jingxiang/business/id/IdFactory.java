@@ -24,12 +24,12 @@ public class IdFactory {
     /**
      * 账户ID生成器
      */
-    private IdGenerator acctIdGenerator;
+    private IdGenerator userIdGenerator;
 
-    IdFactory(IdGenerator productIdGenerator, IdGenerator tcIdGenerator, IdGenerator acctIdGenerator) {
+    IdFactory(IdGenerator productIdGenerator, IdGenerator tcIdGenerator, IdGenerator userIdGenerator) {
         this.productIdGenerator = productIdGenerator;
         this.tcIdGenerator = tcIdGenerator;
-        this.acctIdGenerator = acctIdGenerator;
+        this.userIdGenerator = userIdGenerator;
     }
 
     /**
@@ -78,8 +78,8 @@ public class IdFactory {
      * @param prefix ID前缀
      * @return 账户模块字符串ID
      */
-    public static String createAcctId(String prefix) {
-        return prefix + INSTANCE.acctIdGenerator.generate();
+    public static String createUserId(String prefix) {
+        return prefix + INSTANCE.userIdGenerator.generate();
     }
 
     /**
@@ -88,7 +88,7 @@ public class IdFactory {
      * @param id 账户模块ID
      * @return 解析结果依次是时间、机器编码、序列号
      */
-    public static Object[] parseAccttId(String id) {
+    public static Object[] parseUserId(String id) {
         return INSTANCE.productIdGenerator.parse(toLongId(id));
     }
 
