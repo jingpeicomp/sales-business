@@ -37,9 +37,9 @@ public class PaymentVo implements Serializable {
     private String shopId;
 
     /**
-     * 订单ID
+     * 订单ID， 如果是订单支付单，就是订单ID；如果是充值支付单，就是充值单ID
      */
-    private String orderId;
+    private String sourceId;
 
     /**
      * 付款者

@@ -3,15 +3,19 @@ package com.jingxiang.business.tc.order;
 import com.jingxiang.business.api.order.OrderCallbackApi;
 import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.consts.Role;
+import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
 import com.jingxiang.business.tc.common.consts.OrderConsts;
 import com.jingxiang.business.tc.common.consts.OrderStatus;
 import com.jingxiang.business.tc.common.vo.order.*;
+import com.jingxiang.business.user.acct.common.consts.PaymentSource;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentOperateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import com.jingxiang.business.user.acct.pay.PayService;
+import com.jingxiang.business.user.uc.common.vo.shop.ShopVo;
+import com.jingxiang.business.user.uc.shop.ShopService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,9 @@ public class OrderService implements OrderCallbackApi {
     @Autowired
     private PayService paymentService;
 
+    @Autowired
+    private ShopService shopService;
+
     /**
      * 买家下单接口
      *
@@ -62,13 +69,17 @@ public class OrderService implements OrderCallbackApi {
 
         if (order.needPay()) {
             //创建支付单
+            ShopVo shop = shopService.queryVoById(order.getShopId())
+                    .orElseThrow(() -> new ServiceException("找不到对应的店铺,ID:" + order.getShopId()));
             PaymentCreateRequest createRequest = PaymentCreateRequest.builder()
-                    .buyer(order.getBuyer())
-                    .orderId(order.getId())
+                    .payer(order.getBuyer())
+                    .payee(shop.getOwner())
+                    .sourceId(order.getId())
                     .payAmount(order.getAmount().getTotalPayPrice())
                     .payType(order.getPayment().getPayType())
                     .shopId(order.getShopId())
                     .title(order.calculateTitle())
+                    .source(PaymentSource.ORDER_PAY)
                     .build();
             PaymentVo paymentVo = paymentService.create(createRequest);
             order.updatePayment(paymentVo);

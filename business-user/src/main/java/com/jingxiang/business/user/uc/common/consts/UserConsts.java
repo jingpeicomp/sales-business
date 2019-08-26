@@ -19,4 +19,9 @@ public interface UserConsts {
      * 系统店铺ID
      */
     String ID_SHOP_SYSTEM = "S001";
+
+    /**
+     * 系统店铺ID
+     */
+    String ID_SHOP_SYSTEM_OWNER = "U001";
 }

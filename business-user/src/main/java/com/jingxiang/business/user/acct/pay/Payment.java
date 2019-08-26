@@ -41,10 +41,10 @@ public class Payment implements Serializable {
     private String shopId;
 
     /**
-     * 订单ID
+     * 订单ID， 如果是订单支付单，就是订单ID；如果是充值支付单，就是充值单ID
      */
-    @Column(name = "ORDER_ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '订单ID'")
-    private String orderId;
+    @Column(name = "SOURCE_ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '请求源ID。如果是订单支付单，就是订单ID'")
+    private String sourceId;
 
     /**
      * 付款者
@@ -208,7 +208,7 @@ public class Payment implements Serializable {
                 .payType(payType)
                 .payAmount(payAmount)
                 .paidAmount(paidAmount)
-                .orderId(orderId)
+                .sourceId(sourceId)
                 .payTime(payTime)
                 .status(status)
                 .title(title)
@@ -230,11 +230,12 @@ public class Payment implements Serializable {
     public static Payment from(PaymentCreateRequest request) {
         Payment payment = new Payment();
         payment.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_PAYMENT));
-        payment.setPayer(request.getBuyer());
+        payment.setPayer(request.getPayer());
+        payment.setPayee(request.getPayee());
         payment.setShopId(request.getShopId());
         payment.setPayType(request.getPayType());
         payment.setPayAmount(request.getPayAmount());
-        payment.setOrderId(request.getOrderId());
+        payment.setSourceId(request.getSourceId());
         payment.setTitle(request.getTitle());
         payment.setDescription(request.getDescription());
         payment.setSource(request.getSource());

@@ -1,7 +1,7 @@
 package com.jingxiang.business.user.uc.address;
 
 import com.jingxiang.business.id.IdFactory;
-import com.jingxiang.business.user.uc.common.vo.address.UserConsts;
+import com.jingxiang.business.user.uc.common.consts.UserConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

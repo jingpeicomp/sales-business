@@ -27,12 +27,17 @@ public class PaymentCreateRequest implements Serializable {
     /**
      * 订单ID
      */
-    private String orderId;
+    private String sourceId;
 
     /**
      * 付款者
      */
-    private String buyer;
+    private String payer;
+
+    /**
+     * 收款者
+     */
+    private String payee;
 
     /**
      * 支付类型，微信支付:0;支付宝:1

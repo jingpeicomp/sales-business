@@ -45,8 +45,9 @@ public class DepositService {
         Deposit deposit = Deposit.from(request);
         depositRepository.save(deposit);
         PaymentCreateRequest paymentCreateRequest = PaymentCreateRequest.builder()
-                .buyer(request.getUserId())
-                .orderId(deposit.getId())
+                .payer(request.getUserId())
+                .payee(UserConsts.ID_SHOP_SYSTEM_OWNER)
+                .sourceId(deposit.getId())
                 .description("")
                 .payAmount(deposit.getPayAmount())
                 .payType(deposit.getPayType())

@@ -59,7 +59,7 @@ public class WxpayService {
         } catch (ServiceException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Wxpay pay payment {} {} error", payment.getId(), payment.getOrderId(), e);
+            log.error("Wxpay pay payment {} {} error", payment.getId(), payment.getSourceId(), e);
             throw new ServiceException("T-020004", e.getLocalizedMessage());
         }
     }
@@ -194,7 +194,7 @@ public class WxpayService {
         Map<String, String> unifiedData = new HashMap<>();
         unifiedData.put("body", payment.getTitle());
         unifiedData.put("attach", payment.getId());
-        unifiedData.put("out_trade_no", payment.getOrderId());
+        unifiedData.put("out_trade_no", payment.getSourceId());
         unifiedData.put("device_info", payment.getPayer());
         unifiedData.put("fee_type", "CNY");
         unifiedData.put("total_fee", CommonUtils.formatDownFee(payment.getPayAmount()));

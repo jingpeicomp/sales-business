@@ -9,9 +9,11 @@ import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.user.acct.account.AccountService;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayService;
+import com.jingxiang.business.user.acct.common.consts.PaymentSource;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentOperateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.deposit.DepositService;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,9 @@ public class PayService {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private DepositService depositService;
 
     /**
      * 创建支付单
@@ -136,8 +141,8 @@ public class PayService {
         payment.updateWxpaySuccessNotification(request);
         paymentRepository.save(payment);
         PaymentPaidRequest paidRequest = PaymentPaidRequest.builder()
-                .paidPrice(payment.getPaidAmount())
-                .orderId(payment.getOrderId())
+                .paidAmount(payment.getPaidAmount())
+                .sourceId(payment.getSourceId())
                 .shopId(payment.getShopId())
                 .successful(true)
                 .paymentId(payment.getId())
@@ -146,8 +151,13 @@ public class PayService {
                 .payTime(payment.getPayTime())
                 .role(Role.BUYER)
                 .build();
-        orderApi.paid(paidRequest);
-        accountService.orderPaid(payment.toVo());
+        if (payment.getSource() == PaymentSource.ORDER_PAY) {
+            orderApi.paid(paidRequest);
+            accountService.orderPaid(payment.toVo());
+        } else if (payment.getSource() == PaymentSource.SF_DEPOSIT) {
+            depositService.paid(paidRequest);
+            accountService.sellerDepositPaid(payment.toVo());
+        }
     }
 
     /**
@@ -160,8 +170,8 @@ public class PayService {
         payment.updateWxpayFailNotification(request);
         paymentRepository.save(payment);
         PaymentPaidRequest paidRequest = PaymentPaidRequest.builder()
-                .paidPrice(payment.getPaidAmount())
-                .orderId(payment.getOrderId())
+                .paidAmount(payment.getPaidAmount())
+                .sourceId(payment.getSourceId())
                 .shopId(payment.getShopId())
                 .successful(false)
                 .paymentId(payment.getId())
@@ -171,6 +181,10 @@ public class PayService {
                 .role(Role.BUYER)
                 .message(request.getErrorMessage())
                 .build();
-        orderApi.paid(paidRequest);
+        if (payment.getSource() == PaymentSource.ORDER_PAY) {
+            orderApi.paid(paidRequest);
+        } else if (payment.getSource() == PaymentSource.SF_DEPOSIT) {
+            depositService.paid(paidRequest);
+        }
     }
 }

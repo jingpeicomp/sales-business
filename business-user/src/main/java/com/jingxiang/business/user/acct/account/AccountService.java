@@ -48,7 +48,7 @@ public class AccountService {
     public void orderPaid(PaymentVo payment) {
         log.info("Order paid account operation start, payment is {} ", payment);
         AccountBill buyerBill = buyerOrderPaid(payment);
-        log.info("Order paid account operation buyer finish {}", buyerBill);
+        log.info("Order paid account operation payer finish {}", buyerBill);
 
         AccountBill sellerAccountBill = sellerOrderPaid(payment);
         log.info("Order paid account operation seller finish {}", sellerAccountBill);
@@ -71,8 +71,8 @@ public class AccountService {
         try {
             Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayer(), AccountType.USER.getValue())
                     .orElseThrow(() -> {
-                        log.error("Cannot find buyer account {}", payment.getPayer());
-                        throw new ServiceException("找不到对应的账户,ID:" + payment.getPayer());
+                        log.error("Cannot find payer account {}", payment.getPayer());
+                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayer());
                     });
             AccountBill bill = buyerAccount.buyerOrderPaid(payment);
             accountRepository.save(buyerAccount);
@@ -100,7 +100,7 @@ public class AccountService {
             Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayee(), AccountType.SELLER.getValue())
                     .orElseThrow(() -> {
                         log.error("Cannot find seller account {}", payment.getPayee());
-                        throw new ServiceException("找不到对应的账户,ID:" + payment.getPayee());
+                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayee());
                     });
             AccountBill bill = buyerAccount.sellerOrderPaid(payment);
             accountRepository.save(buyerAccount);
@@ -124,7 +124,7 @@ public class AccountService {
         ShopVo shop = shopService.queryVoById(payment.getShopId())
                 .orElseThrow(() -> {
                     log.error("Cannot find shop {}", payment.getShopId());
-                    throw new ServiceException("找不到对应的店铺,ID:" + payment.getShopId());
+                    return new ServiceException("找不到对应的店铺,ID:" + payment.getShopId());
                 });
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
         attribute.setTimeout(10);
@@ -139,11 +139,39 @@ public class AccountService {
                 partnerAccount = accountRepository.findByUserIdAndType(shop.getPartner(), AccountType.PARTNER.getValue())
                         .orElseThrow(() -> {
                             log.error("Cannot find partner account {}", shop.getPartner());
-                            throw new ServiceException("找不到对应的账户,ID:" + shop.getPartner());
+                            return new ServiceException("找不到对应的账户,ID:" + shop.getPartner());
                         });
             }
             AccountBill bill = partnerAccount.partnerOrderPaid(payment, sellerAccountBill.getAmount(), sellerAccountBill.getSfRate());
             accountRepository.save(partnerAccount);
+            billRepository.save(bill);
+            transactionManager.commit(status);
+            return bill;
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
+    }
+
+    /**
+     * 充值单支付成功卖家账户操作，手工控制事务
+     *
+     * @param payment 充值单支付记录
+     * @return 卖家账户流水
+     */
+    public AccountBill sellerDepositPaid(PaymentVo payment) {
+        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+        attribute.setTimeout(10);
+        TransactionDefinition def = new DefaultTransactionDefinition(attribute);
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayer(), AccountType.SELLER.getValue())
+                    .orElseThrow(() -> {
+                        log.error("Cannot find seller account {}", payment.getPayee());
+                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayee());
+                    });
+            AccountBill bill = buyerAccount.sellerSfDeposit(payment);
+            accountRepository.save(buyerAccount);
             billRepository.save(bill);
             transactionManager.commit(status);
             return bill;
@@ -162,7 +190,7 @@ public class AccountService {
         return Optional.ofNullable(accountRepository.findOne(AcctConsts.ID_ACCOUNT_SYSTEM_PARTNER))
                 .orElseThrow(() -> {
                     log.error("Cannot find system partner account, please check!");
-                    throw new ServiceException("找不到对应的账户,ID:", AcctConsts.ID_ACCOUNT_SYSTEM_PARTNER);
+                    return new ServiceException("找不到对应的账户,ID:", AcctConsts.ID_ACCOUNT_SYSTEM_PARTNER);
                 });
     }
 
@@ -175,7 +203,7 @@ public class AccountService {
         return Optional.ofNullable(accountRepository.findOne(AcctConsts.ID_ACCOUNT_SYSTEM_SELLER))
                 .orElseThrow(() -> {
                     log.error("Cannot find system seller account, please check!");
-                    throw new ServiceException("找不到对应的账户,ID:", AcctConsts.ID_ACCOUNT_SYSTEM_SELLER);
+                    return new ServiceException("找不到对应的账户,ID:", AcctConsts.ID_ACCOUNT_SYSTEM_SELLER);
                 });
     }
 }
