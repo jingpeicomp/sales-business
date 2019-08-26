@@ -1,6 +1,6 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.api.order.OrderPaidRequest;
+import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.base.Describable;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
@@ -293,9 +293,9 @@ public class Order implements Serializable, Describable {
      *
      * @param paidRequest 已支付请求
      */
-    public void updatePayment(OrderPaidRequest paidRequest) {
+    public void updatePayment(PaymentPaidRequest paidRequest) {
         payment.updatePayment(paidRequest);
-        amount.setTotalPaidPrice(paidRequest.getPaidPrice());
+        amount.setTotalPaidPrice(paidRequest.getPaidAmount());
     }
 
     /**

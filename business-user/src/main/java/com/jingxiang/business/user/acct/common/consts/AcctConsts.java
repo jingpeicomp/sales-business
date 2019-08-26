@@ -24,6 +24,11 @@ public interface AcctConsts {
     String ID_PREFIX_ACOUNT_BILL = "AB";
 
     /**
+     * 充值单ID前缀
+     */
+    String ID_PREFIX_DEPOSIT = "UD";
+
+    /**
      * 系统买家账户
      */
     String ID_ACCOUNT_SYSTEM_BUYER = ID_PREFIX_ACCOUNT + "001";
@@ -47,4 +52,9 @@ public interface AcctConsts {
      * 服务费费率
      */
     BigDecimal SERVICE_FEE_RATE = new BigDecimal("0.01");
+
+    /**
+     * 充值单自动关闭时间(秒)
+     */
+    int DEPOSIT_AUTO_CLOSE_TIME_IN_SECONDS = 15 * 60;
 }

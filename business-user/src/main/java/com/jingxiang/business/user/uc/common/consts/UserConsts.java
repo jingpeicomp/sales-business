@@ -14,4 +14,9 @@ public interface UserConsts {
      * 店铺ID前缀
      */
     String ID_PREFIX_SHOP = "S";
+
+    /**
+     * 系统店铺ID
+     */
+    String ID_SHOP_SYSTEM = "S001";
 }

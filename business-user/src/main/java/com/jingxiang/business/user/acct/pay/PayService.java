@@ -1,7 +1,7 @@
 package com.jingxiang.business.user.acct.pay;
 
-import com.jingxiang.business.api.order.OrderApi;
-import com.jingxiang.business.api.order.OrderPaidRequest;
+import com.jingxiang.business.api.order.OrderCallbackApi;
+import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.NotFindException;
@@ -37,7 +37,7 @@ public class PayService {
     private WxpayService wxpayService;
 
     @Autowired
-    private OrderApi orderApi;
+    private OrderCallbackApi orderApi;
 
     @Autowired
     private AccountService accountService;
@@ -135,7 +135,7 @@ public class PayService {
     private void wxpayPaidSuccessfully(WxpayNotifyRequest request, Payment payment) {
         payment.updateWxpaySuccessNotification(request);
         paymentRepository.save(payment);
-        OrderPaidRequest paidRequest = OrderPaidRequest.builder()
+        PaymentPaidRequest paidRequest = PaymentPaidRequest.builder()
                 .paidPrice(payment.getPaidAmount())
                 .orderId(payment.getOrderId())
                 .shopId(payment.getShopId())
@@ -159,7 +159,7 @@ public class PayService {
     private void wxpayPaidFail(WxpayNotifyRequest request, Payment payment) {
         payment.updateWxpayFailNotification(request);
         paymentRepository.save(payment);
-        OrderPaidRequest paidRequest = OrderPaidRequest.builder()
+        PaymentPaidRequest paidRequest = PaymentPaidRequest.builder()
                 .paidPrice(payment.getPaidAmount())
                 .orderId(payment.getOrderId())
                 .shopId(payment.getShopId())

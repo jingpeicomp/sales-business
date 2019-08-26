@@ -1,4 +1,4 @@
-package com.jingxiang.business.api.order;
+package com.jingxiang.business.api.payment;
 
 import com.jingxiang.business.consts.Role;
 import lombok.AllArgsConstructor;
@@ -11,23 +11,23 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 订单支付结果请求
+ * 支付单支付结果请求
  * Created by liuzhaoming on 2019/8/20.
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderPaidRequest implements Serializable {
+public class PaymentPaidRequest implements Serializable {
     /**
      * 店铺ID
      */
     private String shopId;
 
     /**
-     * 订单ID
+     * 来源ID，订单支付结果是订单ID，充值单支付结果是充值单ID
      */
-    private String orderId;
+    private String sourceId;
 
     /**
      * 是否成功
@@ -67,5 +67,5 @@ public class OrderPaidRequest implements Serializable {
     /**
      * 支付金额
      */
-    private BigDecimal paidPrice;
+    private BigDecimal paidAmount;
 }

@@ -86,8 +86,8 @@ public class OrderController {
         return Optional.ofNullable(orderService.pay(request))
                 .map(Order::toVo)
                 .orElseThrow(() -> {
-                    log.error("Fail to pay order, shopID:{}, orderId:{}  request:{}", shopId, orderId, request);
-                    return new ServiceException("Fail to pay order, shopId:" + shopId + ", orderId:" + orderId);
+                    log.error("Fail to pay order, shopID:{}, sourceId:{}  request:{}", shopId, orderId, request);
+                    return new ServiceException("Fail to pay order, shopId:" + shopId + ", sourceId:" + orderId);
                 });
     }
 
@@ -106,8 +106,8 @@ public class OrderController {
         return Optional.ofNullable(orderService.deliver(request))
                 .map(Order::toVo)
                 .orElseThrow(() -> {
-                    log.error("Fail to deliver order, shopID:{}, orderId:{}  request:{}", shopId, orderId, request);
-                    return new ServiceException("Fail to deliver order, shopId:" + shopId + ", orderId:" + orderId);
+                    log.error("Fail to deliver order, shopID:{}, sourceId:{}  request:{}", shopId, orderId, request);
+                    return new ServiceException("Fail to deliver order, shopId:" + shopId + ", sourceId:" + orderId);
                 });
     }
 
@@ -126,8 +126,8 @@ public class OrderController {
         return Optional.ofNullable(orderService.confirm(request))
                 .map(Order::toVo)
                 .orElseThrow(() -> {
-                    log.error("Fail to confirm order, shopID:{}, orderId:{}  request:{}", shopId, orderId, request);
-                    return new ServiceException("Fail to confirm order, shopId:" + shopId + ", orderId:" + orderId);
+                    log.error("Fail to confirm order, shopID:{}, sourceId:{}  request:{}", shopId, orderId, request);
+                    return new ServiceException("Fail to confirm order, shopId:" + shopId + ", sourceId:" + orderId);
                 });
     }
 }

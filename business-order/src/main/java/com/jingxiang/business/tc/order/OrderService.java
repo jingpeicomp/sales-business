@@ -1,7 +1,7 @@
 package com.jingxiang.business.tc.order;
 
-import com.jingxiang.business.api.order.OrderApi;
-import com.jingxiang.business.api.order.OrderPaidRequest;
+import com.jingxiang.business.api.order.OrderCallbackApi;
+import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.product.goods.SkuService;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class OrderService implements OrderApi {
+public class OrderService implements OrderCallbackApi {
     @Autowired
     private OrderRepository orderRepository;
 
@@ -138,8 +138,8 @@ public class OrderService implements OrderApi {
      */
     @Override
     @Transactional(timeout = 10)
-    public void paid(OrderPaidRequest request) {
-        Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
+    public void paid(PaymentPaidRequest request) {
+        Optional<Order> optional = orderRepository.findByIdAndShopId(request.getSourceId(), request.getShopId());
         if (!optional.isPresent()) {
             log.error("Modify order paid result fail, because cannot find order {}", request);
             throw new IllegalArgumentException("无法修改支付结果，因为找不到对应的订单" + request);

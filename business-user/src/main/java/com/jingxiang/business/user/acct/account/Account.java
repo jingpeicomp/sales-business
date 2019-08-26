@@ -1,6 +1,7 @@
 package com.jingxiang.business.user.acct.account;
 
 import com.jingxiang.business.consts.Role;
+import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.common.consts.*;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
@@ -150,7 +151,6 @@ public class Account implements Serializable {
                 .sfRate(sfRate)
                 .bfRate(bfRate)
                 .build();
-
     }
 
     /**
@@ -219,7 +219,118 @@ public class Account implements Serializable {
                 .requestId(payment.getOrderId())
                 .paymentId(payment.getId())
                 .sfBalance(sfBalance)
+                .target(AccountOperationTarget.SERVICE_FEE)
+                .totalBfExpend(totalBfExpend)
+                .totalExpend(totalExpend)
+                .totalIncome(totalIncome)
+                .totalSfExpend(totalSfExpend)
+                .totalSfIncome(totalSfIncome)
+                .totalBfExpend(totalBfExpend)
+                .sfRate(sfRate)
+                .bfRate(bfRate)
+                .build();
+    }
+
+    /**
+     * 卖家服务费充值
+     *
+     * @param payment 服务费充值支付单
+     * @return 卖家账户流水
+     */
+    public AccountBill sellerSfDeposit(PaymentVo payment) {
+        sfBalance = sfBalance.add(payment.getPaidAmount());
+        return AccountBill.builder()
+                .accountId(id)
+                .userId(userId)
+                .accountType(type)
+                .amount(payment.getPaidAmount())
+                .balance(balance)
+                .fundDirection(FundDirection.DEBIT)
+                .operation(AccountOperation.DEPOSIT)
+                .operator(userId)
+                .operatorRole(Role.SELLER)
+                .requestId(payment.getOrderId())
+                .paymentId(payment.getId())
+                .sfBalance(sfBalance)
+                .target(AccountOperationTarget.SERVICE_FEE)
+                .totalBfExpend(totalBfExpend)
+                .totalExpend(totalExpend)
+                .totalIncome(totalIncome)
+                .totalSfExpend(totalSfExpend)
+                .totalSfIncome(totalSfIncome)
+                .totalBfExpend(totalBfExpend)
+                .sfRate(sfRate)
+                .bfRate(bfRate)
+                .build();
+    }
+
+    /**
+     * 卖家提现
+     *
+     * @param payment 账户余额提现支付单
+     * @return 卖家账户流水
+     */
+    public AccountBill sellerWithdraw(PaymentVo payment) {
+        if (sfBalance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("账户服务费余额不足");
+        }
+
+        if (balance.compareTo(payment.getPaidAmount()) < 0) {
+            throw new ServiceException("账户余额小于提现金额");
+        }
+
+        balance = balance.subtract(payment.getPaidAmount());
+        return AccountBill.builder()
+                .accountId(id)
+                .userId(userId)
+                .accountType(type)
+                .amount(payment.getPaidAmount())
+                .balance(balance)
+                .fundDirection(FundDirection.CREDIT)
+                .operation(AccountOperation.WITHDRAW)
+                .operator(userId)
+                .operatorRole(Role.SELLER)
+                .requestId(payment.getOrderId())
+                .paymentId(payment.getId())
+                .sfBalance(sfBalance)
                 .target(AccountOperationTarget.BALANCE)
+                .totalBfExpend(totalBfExpend)
+                .totalExpend(totalExpend)
+                .totalIncome(totalIncome)
+                .totalSfExpend(totalSfExpend)
+                .totalSfIncome(totalSfIncome)
+                .totalBfExpend(totalBfExpend)
+                .sfRate(sfRate)
+                .bfRate(bfRate)
+                .build();
+    }
+
+    /**
+     * 合伙人提现
+     *
+     * @param payment 合伙人服务费提现支付单
+     * @return 合伙人账户流水
+     */
+    public AccountBill partnerWithdraw(PaymentVo payment) {
+        if (sfBalance.compareTo(payment.getPaidAmount()) < 0) {
+            throw new ServiceException("账户服务费余额小于提现金额");
+        }
+
+        sfBalance = sfBalance.subtract(payment.getPaidAmount());
+        return AccountBill.builder()
+                .accountId(id)
+                .userId(userId)
+                .accountType(type)
+                .amount(payment.getPaidAmount())
+                .balance(balance)
+                .fundDirection(FundDirection.CREDIT)
+                .operation(AccountOperation.WITHDRAW)
+                .operator(userId)
+                .operatorRole(Role.PARTNER)
+                .requestId(payment.getOrderId())
+                .paymentId(payment.getId())
+                .sfBalance(sfBalance)
+                .target(AccountOperationTarget.SERVICE_FEE)
                 .totalBfExpend(totalBfExpend)
                 .totalExpend(totalExpend)
                 .totalIncome(totalIncome)
