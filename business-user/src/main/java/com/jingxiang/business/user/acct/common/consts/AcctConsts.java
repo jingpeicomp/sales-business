@@ -21,12 +21,17 @@ public interface AcctConsts {
     /**
      * 账户流水ID前缀
      */
-    String ID_PREFIX_ACOUNT_BILL = "AB";
+    String ID_PREFIX_ACCOUNT_BILL = "UB";
 
     /**
      * 充值单ID前缀
      */
     String ID_PREFIX_DEPOSIT = "UD";
+
+    /**
+     * 提现单ID前缀
+     */
+    String ID_PREFIX_WITHDRAWAL = "UW";
 
     /**
      * 系统买家账户

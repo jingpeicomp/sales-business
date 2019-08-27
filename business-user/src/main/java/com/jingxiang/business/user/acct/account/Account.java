@@ -2,9 +2,11 @@ package com.jingxiang.business.user.acct.account;
 
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.ServiceException;
+import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.common.consts.*;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalVo;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -129,6 +131,7 @@ public class Account implements Serializable {
     public AccountBill buyerOrderPaid(PaymentVo payment) {
         totalExpend = totalExpend.add(payment.getPaidAmount());
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
@@ -170,6 +173,7 @@ public class Account implements Serializable {
         totalSfExpend = totalSfExpend.add(sfFee);
 
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
@@ -207,6 +211,7 @@ public class Account implements Serializable {
         totalSfIncome = totalSfIncome.add(sfFee);
 
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
@@ -240,6 +245,7 @@ public class Account implements Serializable {
     public AccountBill sellerSfDeposit(PaymentVo payment) {
         sfBalance = sfBalance.add(payment.getPaidAmount());
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
@@ -275,6 +281,7 @@ public class Account implements Serializable {
         totalBfExpend = totalBfExpend.add(bankFee);
         balance = balance.subtract(bankFee);
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
@@ -302,31 +309,31 @@ public class Account implements Serializable {
     /**
      * 卖家提现
      *
-     * @param payment 账户余额提现支付单
+     * @param withdrawal 账户余额提现支付单
      * @return 卖家账户流水
      */
-    public AccountBill sellerWithdraw(PaymentVo payment) {
+    public AccountBill sellerWithdraw(WithdrawalVo withdrawal) {
         if (sfBalance.compareTo(BigDecimal.ZERO) < 0) {
             throw new ServiceException("账户服务费余额不足");
         }
 
-        if (balance.compareTo(payment.getPaidAmount()) < 0) {
+        if (balance.compareTo(withdrawal.getPaidAmount()) < 0) {
             throw new ServiceException("账户余额小于提现金额");
         }
 
-        balance = balance.subtract(payment.getPaidAmount());
+        balance = balance.subtract(withdrawal.getPayAmount());
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
-                .amount(payment.getPaidAmount())
+                .amount(withdrawal.getPayAmount())
                 .balance(balance)
                 .fundDirection(FundDirection.CREDIT)
                 .operation(AccountOperation.WITHDRAW)
                 .operator(userId)
                 .operatorRole(Role.SELLER)
-                .requestId(payment.getSourceId())
-                .paymentId(payment.getId())
+                .requestId(withdrawal.getId())
                 .sfBalance(sfBalance)
                 .target(AccountOperationTarget.BALANCE)
                 .totalBfExpend(totalBfExpend)
@@ -343,27 +350,27 @@ public class Account implements Serializable {
     /**
      * 合伙人提现
      *
-     * @param payment 合伙人服务费提现支付单
+     * @param withdrawal 合伙人服务费提现支付单
      * @return 合伙人账户流水
      */
-    public AccountBill partnerWithdraw(PaymentVo payment) {
-        if (sfBalance.compareTo(payment.getPaidAmount()) < 0) {
+    public AccountBill partnerWithdraw(WithdrawalVo withdrawal) {
+        if (sfBalance.compareTo(withdrawal.getPaidAmount()) < 0) {
             throw new ServiceException("账户服务费余额小于提现金额");
         }
 
-        sfBalance = sfBalance.subtract(payment.getPaidAmount());
+        sfBalance = sfBalance.subtract(withdrawal.getPayAmount());
         return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
-                .amount(payment.getPaidAmount())
+                .amount(withdrawal.getPayAmount())
                 .balance(balance)
                 .fundDirection(FundDirection.CREDIT)
                 .operation(AccountOperation.WITHDRAW)
                 .operator(userId)
                 .operatorRole(Role.PARTNER)
-                .requestId(payment.getSourceId())
-                .paymentId(payment.getId())
+                .requestId(withdrawal.getId())
                 .sfBalance(sfBalance)
                 .target(AccountOperationTarget.SERVICE_FEE)
                 .totalBfExpend(totalBfExpend)

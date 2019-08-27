@@ -1,14 +1,14 @@
-package com.jingxiang.business.user.acct.deposit;
+package com.jingxiang.business.user.acct.withdrawal;
 
-import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.consts.PayType;
+import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.user.acct.common.consts.AcctConsts;
 import com.jingxiang.business.user.acct.common.consts.CompleteStatus;
-import com.jingxiang.business.user.acct.common.consts.DepositType;
 import com.jingxiang.business.user.acct.common.consts.PayStatus;
-import com.jingxiang.business.user.acct.common.vo.deposit.DepositCreateRequest;
-import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.common.consts.WithdrawalType;
+import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalCreateRequest;
+import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalVo;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,18 +20,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 充值单
- * Created by liuzhaoming on 2019/8/26.
+ * 提现单
+ * Created by liuzhaoming on 2019/8/27.
  */
 @Entity
-@Table(name = "T_BIZ_UC_DEPOSIT")
+@Table(name = "T_BIZ_UC_WITHDRAWAL")
 @Data
-public class Deposit implements Serializable {
+public class Withdrawal implements Serializable {
     /**
-     * 充值单编号
+     * 提现单编号
      */
     @Id
-    @Column(name = "ID", columnDefinition = "varchar(32) not null comment '充值单编号'")
+    @Column(name = "ID", columnDefinition = "varchar(32) not null comment '提现单编号'")
     private String id;
 
     /**
@@ -41,23 +41,23 @@ public class Deposit implements Serializable {
     private String userId;
 
     /**
-     * 充值单类型
+     * 提现单类型
      */
-    @Column(name = "TYPE", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单类型'")
-    @Convert(converter = DepositType.EnumConvert.class)
-    private DepositType type;
+    @Column(name = "TYPE", nullable = false, updatable = false, columnDefinition = "smallint comment '提现单类型'")
+    @Convert(converter = WithdrawalType.EnumConvert.class)
+    private WithdrawalType type;
 
     /**
-     * 充值金额
+     * 提现金额
      */
-    @Column(name = "AMOUNT", columnDefinition = "decimal(20,2) comment '充值金额'")
+    @Column(name = "AMOUNT", columnDefinition = "decimal(20,2) comment '提现金额'")
     private BigDecimal amount;
 
     /**
      * 银行手续费
      */
     @Column(name = "BANK_FEE", columnDefinition = "decimal(20,2) comment '银行手续费'")
-    private BigDecimal bankFee;
+    private BigDecimal bankFee = BigDecimal.ZERO;
 
     /**
      * 应付金额
@@ -73,16 +73,16 @@ public class Deposit implements Serializable {
     private BigDecimal paidAmount;
 
     /**
-     * 充值单支付状态
+     * 提现单支付状态
      */
-    @Column(name = "PAY_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单支付状态'")
+    @Column(name = "PAY_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '提现单支付状态'")
     @Convert(converter = PayStatus.EnumConvert.class)
     private PayStatus payStatus;
 
     /**
-     * 充值单完成状态
+     * 提现单完成状态
      */
-    @Column(name = "COMPLETE_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单完成状态'")
+    @Column(name = "COMPLETE_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '提现单完成状态'")
     @Convert(converter = CompleteStatus.EnumConvert.class)
     private CompleteStatus completeStatus;
 
@@ -103,18 +103,12 @@ public class Deposit implements Serializable {
     private LocalDateTime updateTime;
 
     /**
-     * 充值单成功时间
+     * 提现单成功时间
      */
     @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '订单成功时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime finishTime;
 
-    /**
-     * 自动关闭充值单时间
-     */
-    @Column(name = "AUTO_CLOSE_TIME", columnDefinition = "datetime comment '自动关闭订单时间'")
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
-    private LocalDateTime autoCloseTime;
 
     /**
      * 支付类型，微信支付:1;支付宝:2
@@ -156,36 +150,41 @@ public class Deposit implements Serializable {
     private Long version;
 
     /**
-     * 更新支付单信息
-     *
-     * @param vo 支付单信息
+     * 人工确认提现单
      */
-    public void updatePayment(PaymentVo vo) {
-        paidAmount = vo.getPaidAmount();
-        payTime = vo.getPayTime();
-        payId = vo.getId();
-        platformPayId = vo.getPlatformPayId();
-        prePlatformPayId = vo.getPrePlatformPayId();
+    public void confirm() {
+        if (completeStatus != CompleteStatus.DOING) {
+            throw new ServiceException("提现单不是正在处理状态，不能确认。ID:" + id);
+        }
+        completeStatus = CompleteStatus.DONE;
+        payStatus = PayStatus.PAID;
+        paidAmount = payAmount;
+        payTime = LocalDateTime.now();
+        finishTime = payTime;
     }
 
     /**
-     * 更新支付单支付结果回调信息
+     * 获取提现单值对象
      *
-     * @param request 支付单支付结果回调信息
+     * @return 值对象
      */
-    public void updatePayment(PaymentPaidRequest request) {
-        paidAmount = request.getPaidAmount();
-        payId = request.getPaymentId();
-        payTime = request.getPayTime();
-        platformPayId = request.getPlatformPayId();
-        prePlatformPayId = request.getPrePlatformPayId();
-        payStatus = request.isSuccessful() ? PayStatus.PAID : PayStatus.FAILED;
-        if (request.isSuccessful()) {
-            completeStatus = CompleteStatus.DONE;
-            finishTime = LocalDateTime.now();
-        }
+    public WithdrawalVo toVo() {
+        return WithdrawalVo.builder()
+                .amount(amount)
+                .bankFee(bankFee)
+                .completeStatus(completeStatus)
+                .createTime(createTime)
+                .finishTime(finishTime)
+                .id(id)
+                .paidAmount(paidAmount)
+                .payAmount(payAmount)
+                .payStatus(payStatus)
+                .payType(payType)
+                .type(type)
+                .updateTime(updateTime)
+                .userId(userId)
+                .build();
     }
-
 
     /**
      * 创建充值单
@@ -193,16 +192,15 @@ public class Deposit implements Serializable {
      * @param request 充值请求
      * @return 充值单
      */
-    public static Deposit from(DepositCreateRequest request) {
-        Deposit deposit = new Deposit();
-        deposit.setAmount(request.getAmount());
-        deposit.setAutoCloseTime(LocalDateTime.now().plusSeconds(AcctConsts.DEPOSIT_AUTO_CLOSE_TIME_IN_SECONDS));
-        deposit.setBankFee(BigDecimal.ZERO);
-        deposit.setCompleteStatus(CompleteStatus.DOING);
-        deposit.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_DEPOSIT));
-        deposit.setPayAmount(request.getAmount());
-        deposit.setPayStatus(PayStatus.UNPAID);
-        deposit.setType(DepositType.fromValue(request.getDepositType()));
-        return deposit;
+    public static Withdrawal from(WithdrawalCreateRequest request) {
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setAmount(request.getAmount());
+        withdrawal.setBankFee(BigDecimal.ZERO);
+        withdrawal.setCompleteStatus(CompleteStatus.DOING);
+        withdrawal.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_WITHDRAWAL));
+        withdrawal.setPayAmount(request.getAmount());
+        withdrawal.setPayStatus(PayStatus.UNPAID);
+        withdrawal.setType(WithdrawalType.fromValue(request.getWithdrawalType()));
+        return withdrawal;
     }
 }

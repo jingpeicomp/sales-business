@@ -5,7 +5,9 @@ import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.account.bill.AccountBillRepository;
 import com.jingxiang.business.user.acct.common.consts.AccountType;
 import com.jingxiang.business.user.acct.common.consts.AcctConsts;
+import com.jingxiang.business.user.acct.common.consts.WithdrawalType;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalVo;
 import com.jingxiang.business.user.uc.common.vo.shop.ShopVo;
 import com.jingxiang.business.user.uc.shop.ShopService;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +71,42 @@ public class AccountService {
 
         AccountBill systemAccountBill = systemDepositPaid(payment);
         log.info("Deposit paid account operation system finish {}", systemAccountBill);
+    }
+
+    /**
+     * 提现单创建事件。因为是手工转账，提现单创建时就把账户余额给扣除掉
+     *
+     * @param withdrawal 提现单
+     */
+    public void withdrawalCreated(WithdrawalVo withdrawal) {
+        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+        attribute.setTimeout(10);
+        TransactionDefinition def = new DefaultTransactionDefinition(attribute);
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            if (withdrawal.getType() == WithdrawalType.BALANCE) {
+                Account sellerAccount = accountRepository.findByUserIdAndType(withdrawal.getUserId(), AccountType.SELLER.getValue())
+                        .orElseThrow(() -> {
+                            log.error("Cannot find seller account {}", withdrawal.getUserId());
+                            return new ServiceException("找不到对应的账户,ID:" + withdrawal.getUserId());
+                        });
+                AccountBill sellerAccountBill = sellerAccount.sellerWithdraw(withdrawal);
+                accountRepository.save(sellerAccount);
+                billRepository.save(sellerAccountBill);
+            } else if (withdrawal.getType() == WithdrawalType.SERVICE_FEE) {
+                Account partnerAccount = accountRepository.findByUserIdAndType(withdrawal.getUserId(), AccountType.PARTNER.getValue())
+                        .orElseThrow(() -> {
+                            log.error("Cannot find partner account {}", withdrawal.getUserId());
+                            return new ServiceException("找不到对应的账户,ID:" + withdrawal.getUserId());
+                        });
+                AccountBill partnerAccountBill = partnerAccount.sellerWithdraw(withdrawal);
+                accountRepository.save(partnerAccount);
+                billRepository.save(partnerAccountBill);
+            }
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
     }
 
     /**
