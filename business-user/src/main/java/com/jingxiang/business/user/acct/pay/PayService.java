@@ -102,7 +102,7 @@ public class PayService {
      */
     @Transactional(timeout = 10, readOnly = true)
     public Optional<PaymentVo> queryByIdAndOrderId(String id, String orderId) {
-        return paymentRepository.findByIdAndOrderId(id, orderId).map(Payment::toVo);
+        return paymentRepository.findByIdAndSourceId(id, orderId).map(Payment::toVo);
     }
 
     /**
@@ -113,7 +113,7 @@ public class PayService {
      */
     @Transactional(timeout = 10)
     public String updateWxpayNotification(WxpayNotifyRequest request) {
-        Optional<Payment> paymentOptional = paymentRepository.findByIdAndOrderId(request.getPaymentId(), request.getOrderId());
+        Optional<Payment> paymentOptional = paymentRepository.findByIdAndSourceId(request.getPaymentId(), request.getOrderId());
         if (!paymentOptional.isPresent()) {
             log.error("Wxpay notify fail..... cannot find payment by id {} and order id {}", request.getPaymentId(), request.getOrderId());
             return wxpayService.buildFailNotifyResponse("Cannot find payment");

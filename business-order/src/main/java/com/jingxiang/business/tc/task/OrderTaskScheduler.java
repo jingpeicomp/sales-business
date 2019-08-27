@@ -27,7 +27,7 @@ public class OrderTaskScheduler {
     /**
      * 自动关闭订单
      */
-    @Scheduled(cron = "${jingxiang.business.order.autoCloseCron}")
+    @Scheduled(cron = "${jingxiang.business.order.autoCloseCron:0 0/1 * * * ?}")
     public void doAutoClose() {
         List<Order> orders = orderService.queryNeedAutoCloseOrders();
         orders.forEach(order -> {
@@ -43,7 +43,7 @@ public class OrderTaskScheduler {
     /**
      * 订单自动收货
      */
-    @Scheduled(cron = "${jingxiang.business.order.autoConfirmCron}")
+    @Scheduled(cron = "${jingxiang.business.order.autoConfirmCron:20 0/5 * * * ?}")
     public void doAutoConfirm() {
         List<Order> orders = orderService.queryNeedAutoConfirmOrders();
         orders.forEach(order -> {

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/7.
  */
 @Entity
-@Table(name = "t_biz_acct_shipping_address")
+@Table(name = "t_biz_uc_shipping_address")
 @Data
 public class ShippingAddress implements Serializable {
 
@@ -32,9 +32,8 @@ public class ShippingAddress implements Serializable {
     /**
      * 用户账户ID
      */
-    @Id
-    @Column(name = "ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '用户账户ID'")
-    private String accountId;
+    @Column(name = "USER_ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '用户账户ID'")
+    private String userId;
 
     /**
      * 是否默认地址
@@ -115,7 +114,7 @@ public class ShippingAddress implements Serializable {
     public ShippingAddressVo toVo() {
         return ShippingAddressVo.builder()
                 .id(id)
-                .accountId(accountId)
+                .userId(userId)
                 .def(def)
                 .receiverName(receiverName)
                 .receiverMobile(receiverMobile)
@@ -135,7 +134,7 @@ public class ShippingAddress implements Serializable {
      */
     public static ShippingAddress fromVo(ShippingAddressVo vo) {
         ShippingAddress shippingAddress = new ShippingAddress();
-        shippingAddress.setAccountId(vo.getAccountId());
+        shippingAddress.setUserId(vo.getUserId());
         shippingAddress.setDef(vo.isDef());
         shippingAddress.setReceiverName(vo.getReceiverName());
         shippingAddress.setReceiverMobile(vo.getReceiverMobile());

@@ -17,17 +17,17 @@ public interface ShippingAddressRepository extends JpaRepository<ShippingAddress
     /**
      * 查询用户默认收货地址
      *
-     * @param accountId 用户帐号ID
+     * @param userId 用户帐号ID
      * @return 用户默认收货地址
      */
-    @Query("select t from ShippingAddress t where t.accountId=?1 and t.def=true")
-    Optional<ShippingAddress> findDefault(String accountId);
+    @Query("select t from ShippingAddress t where t.userId=?1 and t.def=true")
+    Optional<ShippingAddress> findDefault(String userId);
 
     /**
      * 查询用户所有收货地址
      *
-     * @param accountId 用户ID
+     * @param userId 用户ID
      * @return 收货地址列表
      */
-    List<ShippingAddress> findByAccountId(String accountId);
+    List<ShippingAddress> findByUserId(String userId);
 }

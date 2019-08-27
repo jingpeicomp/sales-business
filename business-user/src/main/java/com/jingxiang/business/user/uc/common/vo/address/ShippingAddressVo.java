@@ -27,7 +27,7 @@ public class ShippingAddressVo implements Serializable {
     /**
      * 用户账户ID
      */
-    private String accountId;
+    private String userId;
 
     /**
      * 是否默认地址

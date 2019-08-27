@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/2.
  */
 @Entity
-@Table(name = "T_BIZ_PRODUCT_SKU")
+@Table(name = "T_BIZ_PC_SKU")
 @Data
 public class Sku implements Serializable {
     @Id

@@ -39,7 +39,7 @@ public class ShippingAddressService {
      * @return 收货地址列表
      */
     public List<ShippingAddress> query(String accountId) {
-        return repository.findByAccountId(accountId);
+        return repository.findByUserId(accountId);
     }
 
     /**
@@ -53,7 +53,7 @@ public class ShippingAddressService {
     public ShippingAddress save(ShippingAddress shippingAddress) {
         if (StringUtils.isBlank(shippingAddress.getId())) {
             if (!shippingAddress.isDef()) {
-                List<ShippingAddress> addresses = repository.findByAccountId(shippingAddress.getAccountId());
+                List<ShippingAddress> addresses = repository.findByUserId(shippingAddress.getUserId());
                 if (CollectionUtils.isEmpty(addresses)) {
                     //没有收货地址，该地址为默认收货地址
                     shippingAddress.setDef(true);
@@ -61,7 +61,7 @@ public class ShippingAddressService {
             }
             shippingAddress.setId(IdFactory.createUserId(UserConsts.ID_PREFIX_SHIPPING_ADDRESS));
         } else {
-            Optional<ShippingAddress> addressOptional = repository.findDefault(shippingAddress.getAccountId());
+            Optional<ShippingAddress> addressOptional = repository.findDefault(shippingAddress.getUserId());
             if (!addressOptional.isPresent() || addressOptional.get().getId().equals(shippingAddress.getId())) {
                 shippingAddress.setDef(true);
             }

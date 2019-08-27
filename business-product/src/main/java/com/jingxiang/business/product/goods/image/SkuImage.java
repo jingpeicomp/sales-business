@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Created by liuzhaoming on 2019/8/2.
  */
 @Entity
-@Table(name = "T_BIZ_PRODUCT_SKU_IMAGE")
+@Table(name = "T_BIZ_PC_SKU_IMAGE")
 @Data
 public class SkuImage implements Serializable {
 

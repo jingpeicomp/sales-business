@@ -32,7 +32,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.buyer=?0 and t.payStatus<>4")
+    @Query("select t from Order t where t.buyer=?1 and t.payStatus<>4")
     Page<Order> findBuyerWaitPayOrders(String buyer, Pageable pageable);
 
     /**
@@ -42,7 +42,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.buyer=?0 and t.payStatus=4 and t.shipStatus=1")
+    @Query("select t from Order t where t.buyer=?1 and t.payStatus=4 and t.shipStatus=1")
     Page<Order> findBuyerWaitShipOrders(String buyer, Pageable pageable);
 
     /**
@@ -52,7 +52,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.buyer=?0 and t.payStatus=4 and t.shipStatus=2")
+    @Query("select t from Order t where t.buyer=?1 and t.payStatus=4 and t.shipStatus=2")
     Page<Order> findBuyerWaitReceiveOrders(String buyer, Pageable pageable);
 
     /**
@@ -62,7 +62,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.buyer=?0 and t.completeStatus=3")
+    @Query("select t from Order t where t.buyer=?1 and t.completeStatus=3")
     Page<Order> findBuyerCompleteOrders(String buyer, Pageable pageable);
 
     /**
@@ -72,7 +72,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.shopId=?0 and t.payStatus=4 and t.shipStatus=1")
+    @Query("select t from Order t where t.shopId=?1 and t.payStatus=4 and t.shipStatus=1")
     Page<Order> findSellerWaitDealOrders(String shopId, Pageable pageable);
 
     /**
@@ -82,7 +82,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.shopId=?0 and t.payStatus=4 and t.shipStatus=2")
+    @Query("select t from Order t where t.shopId=?1 and t.payStatus=4 and t.shipStatus=2")
     Page<Order> findSellerWaitReceiveOrders(String shopId, Pageable pageable);
 
     /**
@@ -92,7 +92,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param pageable 分页信息
      * @return 查询结果
      */
-    @Query("select t from Order t where t.shopId=?0 and t.completeStatus=3")
+    @Query("select t from Order t where t.shopId=?1 and t.completeStatus=3")
     Page<Order> findSellerCompleteOrders(String shopId, Pageable pageable);
 
     /**
@@ -101,7 +101,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param deadlineTIme 截止时间
      * @return 订单列表
      */
-    @Query("select t from Order t where t.payStatus <> 4 and t.createTime <= ?0")
+    @Query("select t from Order t where t.payStatus <> 4 and t.createTime <= ?1")
     List<Order> findNeedAutoCloseOrders(LocalDateTime deadlineTIme);
 
     /**
@@ -110,6 +110,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      * @param now 当前时间
      * @return 订单
      */
-    @Query("select t from Order t where t.payStatus=4 and t.shipStatus=2 and t.autoConfirmTime <= ?0")
+    @Query("select t from Order t where t.payStatus=4 and t.shipStatus=2 and t.autoConfirmTime <= ?1")
     List<Order> findNeedAutoConfirmOrders(LocalDateTime now);
 }
