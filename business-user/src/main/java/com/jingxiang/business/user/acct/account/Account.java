@@ -265,6 +265,41 @@ public class Account implements Serializable {
     }
 
     /**
+     * 卖家服务费充值银行手续费由平台补贴
+     *
+     * @param payment 服务费充值支付单
+     * @return 卖家账户流水
+     */
+    public AccountBill systemSfDepositAllowance(PaymentVo payment) {
+        BigDecimal bankFee = payment.getPaidAmount().multiply(bfRate);
+        totalBfExpend = totalBfExpend.add(bankFee);
+        balance = balance.subtract(bankFee);
+        return AccountBill.builder()
+                .accountId(id)
+                .userId(userId)
+                .accountType(type)
+                .amount(payment.getPaidAmount())
+                .balance(balance)
+                .fundDirection(FundDirection.CREDIT)
+                .operation(AccountOperation.DEPOSIT)
+                .operator(userId)
+                .operatorRole(Role.SELLER)
+                .requestId(payment.getSourceId())
+                .paymentId(payment.getId())
+                .sfBalance(sfBalance)
+                .target(AccountOperationTarget.BANK_FEE)
+                .totalBfExpend(totalBfExpend)
+                .totalExpend(totalExpend)
+                .totalIncome(totalIncome)
+                .totalSfExpend(totalSfExpend)
+                .totalSfIncome(totalSfIncome)
+                .totalBfExpend(totalBfExpend)
+                .sfRate(sfRate)
+                .bfRate(bfRate)
+                .build();
+    }
+
+    /**
      * 卖家提现
      *
      * @param payment 账户余额提现支付单

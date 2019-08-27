@@ -156,7 +156,7 @@ public class PayService {
             accountService.orderPaid(payment.toVo());
         } else if (payment.getSource() == PaymentSource.SF_DEPOSIT) {
             depositService.paid(paidRequest);
-            accountService.sellerDepositPaid(payment.toVo());
+            accountService.depositPaid(payment.toVo());
         }
     }
 

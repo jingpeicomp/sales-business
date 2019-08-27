@@ -58,6 +58,20 @@ public class AccountService {
     }
 
     /**
+     * 充值单支付成功引起的账户变更，影响卖家、系统两个账户
+     *
+     * @param payment 支付单
+     */
+    public void depositPaid(PaymentVo payment) {
+        log.info("Deposit paid account operation start, payment is {} ", payment);
+        AccountBill sellerBill = sellerDepositPaid(payment);
+        log.info("Deposit paid account operation seller finish {}", sellerBill);
+
+        AccountBill systemAccountBill = systemDepositPaid(payment);
+        log.info("Deposit paid account operation system finish {}", systemAccountBill);
+    }
+
+    /**
      * 订单支付成功买家账户操作，涉及多个账户，手工控制事务
      *
      * @param payment 订单支付记录
@@ -159,7 +173,7 @@ public class AccountService {
      * @param payment 充值单支付记录
      * @return 卖家账户流水
      */
-    public AccountBill sellerDepositPaid(PaymentVo payment) {
+    private AccountBill sellerDepositPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
         attribute.setTimeout(10);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
@@ -172,6 +186,30 @@ public class AccountService {
                     });
             AccountBill bill = buyerAccount.sellerSfDeposit(payment);
             accountRepository.save(buyerAccount);
+            billRepository.save(bill);
+            transactionManager.commit(status);
+            return bill;
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
+    }
+
+    /**
+     * 充值单支付成功系统账户操作，银行手续费由平台承担
+     *
+     * @param payment 充值单支付记录
+     * @return 系统账户流水
+     */
+    private AccountBill systemDepositPaid(PaymentVo payment) {
+        DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
+        attribute.setTimeout(10);
+        TransactionDefinition def = new DefaultTransactionDefinition(attribute);
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            Account systemAccount = querySystemSellerAccount();
+            AccountBill bill = systemAccount.systemSfDepositAllowance(payment);
+            accountRepository.save(systemAccount);
             billRepository.save(bill);
             transactionManager.commit(status);
             return bill;
