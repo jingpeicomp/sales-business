@@ -45,7 +45,7 @@ public class OrderVo implements Serializable {
     /**
      * 订单类型
      */
-
+    @Builder.Default
     private OrderType type = OrderType.NORMAL;
 
     /**

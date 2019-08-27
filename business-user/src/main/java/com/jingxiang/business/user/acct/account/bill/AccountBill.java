@@ -123,42 +123,49 @@ public class AccountBill implements Serializable {
     /**
      * 账户余额
      */
+    @Builder.Default
     @Column(name = "BALANCE", columnDefinition = "decimal(20,2) comment '账户余额'")
     private BigDecimal balance = BigDecimal.ZERO;
 
     /**
      * 总收益
      */
+    @Builder.Default
     @Column(name = "TOTAL_INCOME", columnDefinition = "decimal(20,2) comment '总收益'")
     private BigDecimal totalIncome = BigDecimal.ZERO;
 
     /**
      * 总支出
      */
+    @Builder.Default
     @Column(name = "TOTAL_EXPEND", columnDefinition = "decimal(20,2) comment '总支出'")
     private BigDecimal totalExpend = BigDecimal.ZERO;
 
     /**
      * 服务费(service fee)账户余额
      */
+    @Builder.Default
     @Column(name = "SF_BALANCE", columnDefinition = "decimal(20,2) comment '服务费账户余额'")
     private BigDecimal sfBalance = BigDecimal.ZERO;
 
     /**
      * 服务费(service fee)总收益
      */
+    @Builder.Default
     @Column(name = "TOTAL_SF_INCOME", columnDefinition = "decimal(20,2) comment '服务费总收益'")
     private BigDecimal totalSfIncome = BigDecimal.ZERO;
 
     /**
      * 服务费(service fee)总支出
      */
+    @Builder.Default
     @Column(name = "TOTAL_SF_EXPEND", columnDefinition = "decimal(20,2) comment '服务费总支出'")
     private BigDecimal totalSfExpend = BigDecimal.ZERO;
 
     /**
      * 银行手续费(bank fee)总支出
      */
+    @Builder.Default
     @Column(name = "TOTAL_BF_EXPEND", columnDefinition = "decimal(20,2) comment '银行手续费总支出'")
     private BigDecimal totalBfExpend = BigDecimal.ZERO;
 

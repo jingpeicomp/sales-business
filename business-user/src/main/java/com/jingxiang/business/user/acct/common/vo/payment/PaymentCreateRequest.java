@@ -62,5 +62,6 @@ public class PaymentCreateRequest implements Serializable {
     /**
      * 支付单来源
      */
+    @Builder.Default
     private PaymentSource source = PaymentSource.ORDER_PAY;
 }

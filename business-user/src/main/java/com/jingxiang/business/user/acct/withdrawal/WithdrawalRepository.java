@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * Created by liuzhaoming on 2019/8/27.
  */
 @Repository
-public interface WithdrawalRepository extends JpaRepository<Withdrawal, String>{
+public interface WithdrawalRepository extends JpaRepository<Withdrawal, String> {
 }

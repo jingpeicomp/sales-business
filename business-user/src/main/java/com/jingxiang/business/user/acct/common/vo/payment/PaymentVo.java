@@ -109,6 +109,7 @@ public class PaymentVo implements Serializable {
     /**
      * 支付单状态
      */
+    @Builder.Default
     private PaymentStatus status = PaymentStatus.UNPAID;
 
     /**

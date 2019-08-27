@@ -22,6 +22,7 @@ public class OrderAmountVo implements Serializable {
     /**
      * 物流费用
      */
+    @Builder.Default
     private BigDecimal shipPrice = BigDecimal.ZERO;
 
     /**

@@ -28,6 +28,7 @@ public class OrderPaymentVo implements Serializable {
     /**
      * 支付类型，微信支付:1;支付宝:2
      */
+    @Builder.Default
     private PayType payType = PayType.WEIXIN;
 
     /**
