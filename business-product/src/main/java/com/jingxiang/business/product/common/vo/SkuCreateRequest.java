@@ -47,5 +47,4 @@ public class SkuCreateRequest implements Serializable {
      * 商品描述
      */
     private String description;
-
 }

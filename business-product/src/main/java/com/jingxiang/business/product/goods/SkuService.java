@@ -25,9 +25,29 @@ public class SkuService {
     @Autowired
     private SkuRepository skuRepository;
 
+    /**
+     * 新建商品
+     *
+     * @param sku 商品
+     * @return 更新成功的商品信息
+     */
     @Transactional(timeout = 10)
     public Sku save(Sku sku) {
         return skuRepository.save(sku);
+    }
+
+    /**
+     * 更新商品信息
+     *
+     * @param sku sku
+     * @return 更新成功的SKU信息
+     */
+    @Transactional(timeout = 10)
+    public Sku update(Sku sku) {
+        Sku dbSku = skuRepository.findByIdAndShopId(sku.getId(), sku.getShopId())
+                .orElseThrow(() -> new ResourceNotFindException("找不到对应的商品"));
+        dbSku.update(sku);
+        return skuRepository.save(dbSku);
     }
 
     /**

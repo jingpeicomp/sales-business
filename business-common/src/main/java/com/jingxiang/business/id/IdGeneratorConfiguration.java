@@ -17,7 +17,7 @@ public class IdGeneratorConfiguration {
     private int machineId;
 
     @Bean
-    @ConditionalOnProperty(prefix = "jingxiang.business.idGenerator", name = "enable", havingValue = "true", matchIfMissing=true)
+    @ConditionalOnProperty(prefix = "jingxiang.business.idGenerator", name = "enable", havingValue = "true", matchIfMissing = true)
     public IdFactory idFactory() {
         IdFactory.INSTANCE = new IdFactory(new ShortCardIdGenerator(machineId), new ShortCardIdGenerator(machineId),
                 new ShortCardIdGenerator(machineId));

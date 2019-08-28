@@ -6,6 +6,7 @@ import com.jingxiang.business.product.common.vo.SkuCreateRequest;
 import com.jingxiang.business.product.common.vo.SkuVo;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * SKU实体
@@ -147,6 +149,39 @@ public class Sku implements Serializable {
                 .updateTime(updateTime)
                 .images(CommonUtils.splitStr(images))
                 .build();
+    }
+
+    /**
+     * 更新SKU信息
+     *
+     * @param other 参照的SKU
+     */
+    public void update(Sku other) {
+        if (StringUtils.isNotBlank(other.description) && !Objects.equals(description, other.description)) {
+            description = other.description;
+        }
+
+        if (StringUtils.isNotBlank(other.images) && !Objects.equals(images, other.images)) {
+            images = other.images;
+            pic = images.split(";")[0];
+        }
+
+        if (StringUtils.isNotBlank(other.name) && !Objects.equals(name, other.name)) {
+            name = other.name;
+        }
+
+        if (StringUtils.isNotBlank(other.unit) && !Objects.equals(unit, other.unit)) {
+            unit = other.unit;
+        }
+
+        if (null != other.salePrice && !Objects.equals(salePrice, other.salePrice)) {
+            salePrice = other.salePrice;
+        }
+
+        if (null != other.stock && !Objects.equals(stock, other.stock)) {
+            stock = other.stock;
+        }
+
     }
 
     /**

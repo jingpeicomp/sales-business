@@ -36,7 +36,7 @@ public class SkuController {
      *
      * @param shopId  店铺ID
      * @param request SKU创建请求
-     * @return 创建成功的
+     * @return 创建成功的SKU信息
      */
     @RequestMapping(path = "/{shopId}/skus", method = RequestMethod.POST)
     public SkuVo createSku(@PathVariable String shopId, @Valid @RequestBody SkuCreateRequest request) {
@@ -49,10 +49,18 @@ public class SkuController {
                 });
     }
 
+    /**
+     * 更新商品信息
+     *
+     * @param shopId  店铺ID
+     * @param skuId   SKU ID
+     * @param request SKU更新请求
+     * @return 更新成功后的SKU信息
+     */
     @RequestMapping(path = "/{shopId}/skus/{skuId}", method = RequestMethod.PUT)
     public SkuVo updateSku(@PathVariable String shopId, @PathVariable String skuId, @Valid @RequestBody SkuCreateRequest request) {
         Sku sku = Sku.fromCreateRequest(shopId, skuId, request);
-        return Optional.ofNullable(skuService.save(sku))
+        return Optional.ofNullable(skuService.update(sku))
                 .map(Sku::toVo)
                 .orElseThrow(() -> {
                     log.error("Fail to update sku, shopID:{}, skuId:{}, request:{}", shopId, skuId, request);
