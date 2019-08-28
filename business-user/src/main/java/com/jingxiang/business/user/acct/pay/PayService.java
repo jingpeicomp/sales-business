@@ -4,7 +4,7 @@ import com.jingxiang.business.api.order.OrderCallbackApi;
 import com.jingxiang.business.api.payment.PaymentPaidRequest;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
-import com.jingxiang.business.exception.NotFindException;
+import com.jingxiang.business.exception.ResourceNotFindException;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.user.acct.account.AccountService;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
@@ -66,7 +66,7 @@ public class PayService {
     @Transactional(timeout = 10)
     public PaymentVo cancel(PaymentOperateRequest request) {
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
-                .orElseThrow(() -> new NotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
+                .orElseThrow(() -> new ResourceNotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         payment.cancel();
         return paymentRepository.save(payment).toVo();
     }
@@ -79,7 +79,7 @@ public class PayService {
     @Transactional(timeout = 10)
     public PaymentVo pay(PaymentOperateRequest request) {
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
-                .orElseThrow(() -> new NotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
+                .orElseThrow(() -> new ResourceNotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         if (!payment.canPay()) {
             log.error("The payment cannot pay {}", payment);
             throw new ServiceException("支付单" + payment.getId() + "不符合支付条件");

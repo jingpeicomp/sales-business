@@ -30,6 +30,9 @@ public class SkuVo implements Serializable {
     @Column(name = "ID")
     private String id;
 
+    /**
+     * 店铺ID
+     */
     private String shopId;
 
     /**

@@ -9,6 +9,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_PC_SKU")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Sku implements Serializable {
     @Id
     @Column(name = "ID", columnDefinition = "varchar(32) not null comment '商品ID'")

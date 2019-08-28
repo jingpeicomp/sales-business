@@ -1,6 +1,6 @@
 package com.jingxiang.business.product.goods;
 
-import com.jingxiang.business.exception.NotFindException;
+import com.jingxiang.business.exception.ResourceNotFindException;
 import com.jingxiang.business.product.common.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +93,9 @@ public class SkuService {
     @Transactional(timeout = 10)
     public Sku publish(String shopId, String skuId) {
         Sku sku = skuRepository.findByIdAndShopId(skuId, shopId)
-                .orElseThrow(NotFindException::new);
+                .orElseThrow(ResourceNotFindException::new);
         //TODO, 调用外部接口推送feed流
+        log.info("Publish sku to feed {} {}", shopId, skuId);
         if (updatePublishTime(shopId, skuId)) {
             return sku;
         }

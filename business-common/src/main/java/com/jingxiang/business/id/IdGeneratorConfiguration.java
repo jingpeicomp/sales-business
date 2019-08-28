@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
  * Created by liuzhaoming on 2019/8/7.
  */
 @Configuration
-@ConditionalOnProperty(name = "jingxiang.business.idGenerator.enable", havingValue = "true")
 public class IdGeneratorConfiguration {
 
     @Value("${jingxiang.business.idGenerator.machineId:1}")
     private int machineId;
 
     @Bean
-    public IdFactory productIdGenerator() {
+    @ConditionalOnProperty(prefix = "jingxiang.business.idGenerator", name = "enable", havingValue = "true", matchIfMissing=true)
+    public IdFactory idFactory() {
         IdFactory.INSTANCE = new IdFactory(new ShortCardIdGenerator(machineId), new ShortCardIdGenerator(machineId),
                 new ShortCardIdGenerator(machineId));
         return IdFactory.INSTANCE;

@@ -4,7 +4,7 @@ package com.jingxiang.business.exception;
  * 找不到对应的资源异常
  * Created by liuzhaoming on 2019/8/2.
  */
-public class NotFindException extends RuntimeException {
+public class ResourceNotFindException extends ServiceException {
     /**
      * Constructs a new runtime exception with the specified detail message.
      * The cause is not initialized, and may subsequently be initialized by a
@@ -13,11 +13,11 @@ public class NotFindException extends RuntimeException {
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public NotFindException(String message) {
-        super(message);
+    public ResourceNotFindException(String message) {
+        super("K-000003", message);
     }
 
-    public NotFindException() {
+    public ResourceNotFindException() {
         this("Cannot find resource, please check the condition!");
     }
 
@@ -35,7 +35,7 @@ public class NotFindException extends RuntimeException {
      *                unknown.)
      * @since 1.4
      */
-    public NotFindException(String message, Throwable cause) {
+    public ResourceNotFindException(String message, Throwable cause) {
         super(message, cause);
     }
 

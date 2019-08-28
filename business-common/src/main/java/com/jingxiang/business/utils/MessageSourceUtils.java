@@ -12,7 +12,7 @@ import java.util.Locale;
  * 消息资源国际化类
  * Created by liuzhaoming on 2019/8/20.
  */
-public final class MessageSourceUtil {
+public final class MessageSourceUtils {
     private static MessageSource messageSource;
 
     static {
@@ -20,7 +20,7 @@ public final class MessageSourceUtil {
     }
 
     public static void init(MessageSource messageSource) {
-        MessageSourceUtil.messageSource = messageSource;
+        MessageSourceUtils.messageSource = messageSource;
     }
 
     /**

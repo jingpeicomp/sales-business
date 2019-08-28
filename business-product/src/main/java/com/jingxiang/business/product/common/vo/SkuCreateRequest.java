@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -32,7 +33,7 @@ public class SkuCreateRequest implements Serializable {
     /**
      * 商品销售价
      */
-    @NotBlank(message = "商品价格不能为空")
+    @NotNull(message = "商品价格不能为空")
     @Range(message = "商品价格不能小于0")
     private Double salePrice;
 

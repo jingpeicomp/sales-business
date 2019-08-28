@@ -1,6 +1,6 @@
 package com.jingxiang.business.exception;
 
-import com.jingxiang.business.utils.MessageSourceUtil;
+import com.jingxiang.business.utils.MessageSourceUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
@@ -12,7 +12,7 @@ public class ServiceException extends RuntimeException {
     /**
      * 默认异常
      */
-    private static final String DEFAULT_ERROR_CODE = "T-000001";
+    private static final String DEFAULT_ERROR_CODE = "C-000001";
 
     private String errorCode;
 
@@ -48,7 +48,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceException(String errorCode, String... args) {
-        this(errorCode, MessageSourceUtil.getMessage(errorCode, args, LocaleContextHolder.getLocale()));
+        this(errorCode, MessageSourceUtils.getMessage(errorCode, args, LocaleContextHolder.getLocale()));
     }
 
     private ServiceException(String errorCode, String message) {
