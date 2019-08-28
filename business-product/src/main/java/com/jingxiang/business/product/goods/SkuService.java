@@ -110,16 +110,13 @@ public class SkuService {
      * @param skuId  商品ID
      * @return 商品，如果操作失败返回null
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = 100)
     public Sku publish(String shopId, String skuId) {
         Sku sku = skuRepository.findByIdAndShopId(skuId, shopId)
                 .orElseThrow(ResourceNotFindException::new);
         //TODO, 调用外部接口推送feed流
-        log.info("Publish sku to feed {} {}", shopId, skuId);
-        if (updatePublishTime(shopId, skuId)) {
-            return sku;
-        }
-
-        return null;
+        log.info("Publish sku to feed {}", sku);
+        sku.setPublishTime(LocalDateTime.now());
+        return skuRepository.save(sku);
     }
 }

@@ -67,7 +67,6 @@ public class SkuControllerTest {
         request.setName("iphone8");
         request.setSalePrice(55.45d);
         request.setDescription("Huawei good good good");
-        request.setUnit("个");
         request.setImages(Arrays.asList("http://2.jpg", "http://3.jpg"));
         mvc.perform(MockMvcRequestBuilders.put("/api/business/product/{shopId}/skus/{skuId}", "S001", "K0001")
                 .accept(MediaType.APPLICATION_JSON)
@@ -80,14 +79,41 @@ public class SkuControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.shopId").value("S001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.pic").value("http://2.jpg"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.salePrice").value(55.45d))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.unit").value("个"))
                 .andReturn().getResponse().getErrorMessage();
     }
 
     @Test
-    public void query() {
+    public void query() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/api/business/product/{shopId}/skus", "S001")
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size").value(30))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value("iphoneX"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].shopId").value("S001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].pic").value("http://3.jpg"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].salePrice").value(28.99d))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].unit").value("个"))
+                .andReturn().getResponse().getErrorMessage();
     }
 
     @Test
-    public void publish() {
+    public void publish() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.put("/api/business/product/{shopId}/skus/{skuId}/publish", "S001", "K0001")
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("iphoneX"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.shopId").value("S001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pic").value("http://3.jpg"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.salePrice").value(28.99d))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.unit").value("个"))
+                .andReturn().getResponse().getErrorMessage();
     }
 }

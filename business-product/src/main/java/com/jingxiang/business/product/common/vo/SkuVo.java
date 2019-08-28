@@ -9,8 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -75,6 +77,14 @@ public class SkuVo implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updateTime;
+
+    /**
+     * 商品发布时间
+     */
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime publishTime;
 
     /**
      * 商品描述图片URL列表，多个图片列表用“;”分隔

@@ -147,6 +147,7 @@ public class Sku implements Serializable {
                 .description(description)
                 .addTime(createTime)
                 .updateTime(updateTime)
+                .publishTime(publishTime)
                 .images(CommonUtils.splitStr(images))
                 .build();
     }
