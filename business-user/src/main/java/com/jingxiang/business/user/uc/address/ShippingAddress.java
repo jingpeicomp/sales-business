@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "t_biz_uc_shipping_address")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class ShippingAddress implements Serializable {
 
     /**
@@ -126,6 +128,19 @@ public class ShippingAddress implements Serializable {
                 .build();
     }
 
+    public void update(ShippingAddressVo vo){
+        id = vo.getId();
+        userId = vo.getUserId();
+        def = vo.isDef();
+        receiverName = vo.getReceiverName();
+        receiverMobile = vo.getReceiverMobile();
+        receiverProvince = vo.getReceiverProvince();
+        receiverCity = vo.getReceiverCity();
+        receiverDistrict = vo.getReceiverDistrict();
+        receiverStreet = vo.getReceiverStreet();
+        receiverAddress =vo.getReceiverAddress();
+    }
+
     /**
      * 从VO构造收货地址
      *
@@ -134,6 +149,7 @@ public class ShippingAddress implements Serializable {
      */
     public static ShippingAddress fromVo(ShippingAddressVo vo) {
         ShippingAddress shippingAddress = new ShippingAddress();
+        shippingAddress.setId(vo.getId());
         shippingAddress.setUserId(vo.getUserId());
         shippingAddress.setDef(vo.isDef());
         shippingAddress.setReceiverName(vo.getReceiverName());

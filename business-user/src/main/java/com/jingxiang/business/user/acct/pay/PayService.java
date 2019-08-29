@@ -38,7 +38,7 @@ public class PayService {
     @Autowired
     private WxpayService wxpayService;
 
-    @Autowired
+    @Autowired(required = false)
     private OrderCallbackApi orderApi;
 
     @Autowired

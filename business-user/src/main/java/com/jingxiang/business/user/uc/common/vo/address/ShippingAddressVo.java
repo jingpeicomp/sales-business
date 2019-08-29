@@ -45,7 +45,7 @@ public class ShippingAddressVo implements Serializable {
      * 收货人电话
      */
     @NotBlank(message = "收货人电话不能为空")
-    @Length(min = 8, max = 20, message = "收货人电话长度应该在[8,20]")
+    @Length(min = 8, max = 20, message = "收货人电话长度应该在[7,20]")
     private String receiverMobile;
 
     /**
@@ -65,6 +65,7 @@ public class ShippingAddressVo implements Serializable {
     /**
      * 收货人所在区县
      */
+    @NotBlank(message = "收货人区县不能为空")
     @Length(max = 20, message = "收货人区县长度应该在[1,64]")
     private String receiverDistrict;
 

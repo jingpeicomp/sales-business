@@ -36,8 +36,8 @@ public class AppExceptionHandler {
         if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null)
             throw ex;
 
-        log.error("do [{}] on [{}] failed. exMsg:{}", request.getMethod(), request.getRequestURL(),
-                ex.getLocalizedMessage());
+        log.error("do [{}] on [{}] failed. exMsg:{}, {}", request.getMethod(), request.getRequestURL(),
+                ex.getLocalizedMessage(), ex);
         if (log.isDebugEnabled()) {
             log.error("queryString:{}, parameterMap: {}", request.getQueryString(), request.getParameterMap(), ex);
         }
@@ -56,8 +56,8 @@ public class AppExceptionHandler {
         if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null)
             throw ex;
 
-        log.error("do [{}] on [{}] failed. exMsg:{}", request.getMethod(), request.getRequestURL(),
-                ex.getLocalizedMessage());
+        log.error("do [{}] on [{}] failed. exMsg:{}, {}", request.getMethod(), request.getRequestURL(),
+                ex.getLocalizedMessage(), ex);
         if (log.isDebugEnabled()) {
             log.error("queryString:{}, parameterMap: {}", request.getQueryString(), request.getParameterMap(), ex);
         }
@@ -73,7 +73,7 @@ public class AppExceptionHandler {
     @ResponseBody
     public BaseResponse illegalArgsHandler(HttpServletRequest request, ConstraintViolationException ex) {
         List<String> message = ex.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
-        log.error("do [{}] on [{}] 参数验证错误. exMsg:{}", request.getMethod(), request.getRequestURL(), message);
+        log.error("do [{}] on [{}] 参数验证错误. exMsg:{}, {}", request.getMethod(), request.getRequestURL(), message, ex);
         if (log.isDebugEnabled()) {
             log.error("queryString:{}, parameterMap: {}", request.getQueryString(), request.getParameterMap(), ex);
         }
@@ -91,7 +91,7 @@ public class AppExceptionHandler {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(","));
-        log.error("do [{}] on [{}] 参数验证错误. exMsg:{}", request.getMethod(), request.getRequestURL(), message);
+        log.error("do [{}] on [{}] 参数验证错误. exMsg:{}, {}", request.getMethod(), request.getRequestURL(), message, ex);
         if (log.isDebugEnabled()) {
             log.error("queryString:{}, parameterMap: {}", request.getQueryString(), request.getParameterMap(), ex);
         }
@@ -110,8 +110,8 @@ public class AppExceptionHandler {
         if (AnnotationUtils.findAnnotation(ex.getClass(), ResponseStatus.class) != null)
             throw ex;
 
-        log.error("do [{}] on [{}] failed. exMsg:{}", request.getMethod(), request.getRequestURL(),
-                ex.getLocalizedMessage());
+        log.error("do [{}] on [{}] failed. exMsg:{} ,{}", request.getMethod(), request.getRequestURL(),
+                ex.getLocalizedMessage(), ex);
         if (log.isDebugEnabled()) {
             log.error("queryString:{}, parameterMap: {}", request.getQueryString(), request.getParameterMap(), ex);
         }
