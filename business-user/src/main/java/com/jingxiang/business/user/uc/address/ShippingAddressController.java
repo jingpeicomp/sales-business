@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * 收货地址Rest接口
  * Created by liuzhaoming on 2019/8/7.
  */
 @RestController

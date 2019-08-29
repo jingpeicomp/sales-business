@@ -3,6 +3,8 @@ package com.jingxiang.business.product.goods;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.product.common.vo.SkuCreateRequest;
 import com.jingxiang.business.product.common.vo.SkuVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
  * SKU对外接口Controller
  * Created by liuzhaoming on 2019/8/3.
  */
+@Api(value = "SKU API", description = "SKU商品REST API接口")
 @RestController
 @RequestMapping("/api/business/product")
 @Validated
@@ -38,6 +41,7 @@ public class SkuController {
      * @param request SKU创建请求
      * @return 创建成功的SKU信息
      */
+    @ApiOperation(value = "创建SKU", notes = "根据请求参数创建SKU商品")
     @RequestMapping(path = "/{shopId}/skus", method = RequestMethod.POST)
     public SkuVo createSku(@PathVariable String shopId, @Valid @RequestBody SkuCreateRequest request) {
         Sku sku = Sku.fromCreateRequest(shopId, request);
@@ -57,6 +61,7 @@ public class SkuController {
      * @param request SKU更新请求
      * @return 更新成功后的SKU信息
      */
+    @ApiOperation(value = "更新SKU商品信息", notes = "根据请求参数更新SKU商品信息")
     @RequestMapping(path = "/{shopId}/skus/{skuId}", method = RequestMethod.PUT)
     public SkuVo updateSku(@PathVariable String shopId, @PathVariable String skuId, @Valid @RequestBody SkuCreateRequest request) {
         Sku sku = Sku.fromCreateRequest(shopId, skuId, request);
@@ -76,6 +81,7 @@ public class SkuController {
      * @param size   每页数据数目
      * @return SKU分页查询结果
      */
+    @ApiOperation(value = "分页查询指定店铺的SKU信息", notes = "根据请求参数分页查询指定店铺的SKU信息")
     @RequestMapping(path = "/{shopId}/skus", method = RequestMethod.GET)
     public Page<SkuVo> query(@PathVariable String shopId,
                              @RequestParam(required = false, defaultValue = "0") int page,
@@ -95,6 +101,7 @@ public class SkuController {
      * @param skuId  SKU ID
      * @return 发布后的商品
      */
+    @ApiOperation(value = "发布商品，将商品信息推送到Feed流", notes = "发布商品，将商品信息推送到Feed流")
     @RequestMapping(path = "/{shopId}/skus/{skuId}/publish", method = RequestMethod.PUT)
     public SkuVo publish(@PathVariable String shopId, @PathVariable String skuId) {
         return Optional.ofNullable(skuService.publish(shopId, skuId))

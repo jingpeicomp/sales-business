@@ -30,9 +30,6 @@ public class SkuControllerTest {
 
     private MockMvc mvc;
 
-    @Autowired
-    private SkuService skuService;
-
     @Before
     public void setUp() {
         mvc = MockMvcBuilders.webAppContextSetup(context).build();
