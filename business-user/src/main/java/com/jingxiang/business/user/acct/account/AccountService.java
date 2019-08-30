@@ -173,7 +173,7 @@ public class AccountService {
      * @return 合伙人账户流水
      */
     private AccountBill partnerOrderPaid(PaymentVo payment, AccountBill sellerAccountBill) {
-        ShopVo shop = shopService.queryVoById(payment.getShopId())
+        ShopVo shop = shopService.queryVo(payment.getShopId())
                 .orElseThrow(() -> {
                     log.error("Cannot find shop {}", payment.getShopId());
                     return new ServiceException("找不到对应的店铺,ID:" + payment.getShopId());

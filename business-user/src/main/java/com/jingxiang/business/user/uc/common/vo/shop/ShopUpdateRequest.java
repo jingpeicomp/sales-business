@@ -5,34 +5,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
 /**
- * 店铺创建请求
- * Created by liuzhaoming on 2019/8/25.
+ * 店铺更新请求
+ * Created by liuzhaoming on 2019/8/30.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class ShopCreateRequest implements Serializable {
+public class ShopUpdateRequest implements Serializable {
     /**
-     * 店铺所有者
+     * 店铺ID， 无需前端传入
      */
-    private String owner;
-
-    /**
-     * 店铺关联的群ID
-     */
-    @NotBlank(message = "群不能为空")
-    private String groupId;
+    private String shopId;
 
     /**
      * 店铺名称
      */
-    @NotBlank(message = "店铺名称不能为空")
     @Length(min = 1, max = 64, message = "店铺名称长度应该在[1,64]")
     private String name;
 

@@ -40,7 +40,7 @@ public class ShippingAddressControllerTest {
 
     @Test
     public void queryDefault() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/api/business/account/shippingaddress/default")
+        mvc.perform(MockMvcRequestBuilders.get("/api/business/user/shippingaddress/default")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -54,7 +54,7 @@ public class ShippingAddressControllerTest {
 
     @Test
     public void query() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/api/business/account/shippingaddress")
+        mvc.perform(MockMvcRequestBuilders.get("/api/business/user/shippingaddress")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -78,7 +78,7 @@ public class ShippingAddressControllerTest {
                 .receiverName("王")
                 .receiverDistrict("BBB")
                 .build();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/api/business/account/shippingaddress")
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/api/business/user/shippingaddress")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ public class ShippingAddressControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.receiverProvince").value("北京"))
                 .andReturn();
         ShippingAddressVo returnVo = CommonUtils.fromJson(result.getResponse().getContentAsString(), ShippingAddressVo.class);
-        mvc.perform(MockMvcRequestBuilders.delete("/api/business/account/shippingaddress/{id}", returnVo.getId())
+        mvc.perform(MockMvcRequestBuilders.delete("/api/business/user/shippingaddress/{id}", returnVo.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -109,7 +109,7 @@ public class ShippingAddressControllerTest {
                 .receiverName("王")
                 .receiverDistrict("BBB")
                 .build();
-        mvc.perform(MockMvcRequestBuilders.put("/api/business/account/shippingaddress/{id}", "UA002")
+        mvc.perform(MockMvcRequestBuilders.put("/api/business/user/shippingaddress/{id}", "UA002")
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON)

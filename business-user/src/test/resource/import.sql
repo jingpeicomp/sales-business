@@ -1,6 +1,8 @@
 -- 收货地址表
 insert into `t_biz_uc_shipping_address` ( `id`, `USER_ID`, `def`, `receiver_Name`, `receiver_Mobile`, `receiver_Province`, `receiver_City`, `receiver_District`, `receiver_Street`, `receiver_Address`, `CREATE_TIME`, `update_Time`, `version`) values ( 'UA001', 'U001', false, '张三', '12345678', '江苏', '南京', '雨花台区', '宁南街道', '软件大道新华汇', '2019-08-28 16:55:40', '2019-08-29 16:55:40', 0);
-
 insert into `t_biz_uc_shipping_address` ( `id`, `USER_ID`, `def`, `receiver_Name`, `receiver_Mobile`, `receiver_Province`, `receiver_City`, `receiver_District`, `receiver_Street`, `receiver_Address`, `CREATE_TIME`, `update_Time`, `version`) values ( 'UA002', 'U001', true, '李四', '000000000', '上海', '上海', '雨花台区', '宁南街道', '软件大道新华汇', '2019-08-29 16:55:40', '2019-08-29 17:55:40', 0);
-
 insert into `t_biz_uc_shipping_address` ( `id`, `USER_ID`, `def`, `receiver_Name`, `receiver_Mobile`, `receiver_Province`, `receiver_City`, `receiver_District`, `receiver_Street`, `receiver_Address`, `CREATE_TIME`, `update_Time`, `version`) values ( 'UA003', 'U002', true, '王五', '999999999', '江苏', '扬州', '雨花台区', '宁南街道', '软件大道新华汇', '2018-08-29 16:55:40', '2018-08-29 17:55:40', 0);
+
+-- 店铺
+insert into `T_BIZ_UC_SHOP` ( `id`, `owner`, `group_Id`, `name`, `partner`,  `CREATE_TIME`, `update_Time`, `version`) values ( 'S001', 'U001', 'group1', '张三小店', 'UP001',  '2019-08-28 16:55:40', '2019-08-29 16:55:40', 0);
+insert into `T_BIZ_UC_SHOP` ( `id`, `owner`, `group_Id`, `name`, `partner`,  `CREATE_TIME`, `update_Time`, `version`) values ( 'S002', 'U001', 'group2', '张三水果店', 'UP001',  '2019-08-28 16:55:40', '2019-08-29 16:55:40', 0);

@@ -28,8 +28,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SkuVo implements Serializable {
-    @Id
-    @Column(name = "ID")
+
     private String id;
 
     /**

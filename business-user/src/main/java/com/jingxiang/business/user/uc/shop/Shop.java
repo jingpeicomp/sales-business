@@ -3,11 +3,13 @@ package com.jingxiang.business.user.uc.shop;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.user.uc.common.consts.UserConsts;
 import com.jingxiang.business.user.uc.common.vo.shop.ShopCreateRequest;
+import com.jingxiang.business.user.uc.common.vo.shop.ShopUpdateRequest;
 import com.jingxiang.business.user.uc.common.vo.shop.ShopVo;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +22,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_UC_SHOP")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Shop implements Serializable {
     /**
      * 店铺编号
@@ -68,6 +71,9 @@ public class Shop implements Serializable {
     @Column(name = "UPDATE_TIME", columnDefinition = "datetime comment '修改时间'")
     private LocalDateTime updateTime;
 
+    @Version
+    private Long version;
+
     /**
      * 生成店铺值对象
      *
@@ -83,6 +89,16 @@ public class Shop implements Serializable {
                 .partner(partner)
                 .updateTime(updateTime)
                 .build();
+    }
+
+    /**
+     * 更新店铺信息
+     *
+     * @param request 店铺更新请求
+     */
+    public void update(ShopUpdateRequest request) {
+        name = request.getName();
+        partner = request.getPartner();
     }
 
     /**

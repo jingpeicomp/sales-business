@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 @Api(value = "Shipping Address API", description = "用户收货地址REST API接口")
 @RestController
-@RequestMapping("/api/business/account/shippingaddress")
+@RequestMapping("/api/business/user/shippingaddress")
 @Validated
 @Slf4j
 public class ShippingAddressController {
@@ -85,7 +85,7 @@ public class ShippingAddressController {
      *
      * @param id 收货地址ID
      */
-    @ApiOperation(value = "删除收货地址", notes = "删除收货地址")
+    @ApiOperation(value = "删除下单地址", notes = "删除下单地址")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable String id) {
         shippingAddressService.delete(AuthUtils.getUserId(), id);
