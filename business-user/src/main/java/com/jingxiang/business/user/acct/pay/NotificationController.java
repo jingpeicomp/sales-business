@@ -2,6 +2,7 @@ package com.jingxiang.business.user.acct.pay;
 
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayNotifyRequest;
 import com.jingxiang.business.user.acct.adapter.wechat.WxpayService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,8 +15,9 @@ import javax.servlet.http.HttpServletRequest;
  * 支付回调接口
  * Created by liuzhaoming on 2019/8/20.
  */
+@Api(hidden = true)
 @RestController
-@RequestMapping(path = "/api/business/acct/pay/notifications")
+@RequestMapping(path = "/api/business/acct/payments/notifications")
 @Slf4j
 public class NotificationController {
 

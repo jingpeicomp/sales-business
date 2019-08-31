@@ -106,6 +106,17 @@ public class PayService {
     }
 
     /**
+     * 根据ID查询支付单
+     *
+     * @param id 支付单ID
+     * @return 支付单
+     */
+    public Optional<PaymentVo> queryById(String id) {
+        return Optional.ofNullable(paymentRepository.findOne(id))
+                .map(Payment::toVo);
+    }
+
+    /**
      * 更新微信支付回调信息
      *
      * @param request 微信回调信息
