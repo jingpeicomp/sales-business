@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,12 +22,13 @@ import java.time.LocalDateTime;
  * 账户流水
  * Created by liuzhaoming on 2019/8/25.
  */
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "T_BIZ_UC_ACCOUNT_BILL")
-@Data
+@EntityListeners(AuditingEntityListener.class)
 public class AccountBill implements Serializable {
 
     /**
@@ -73,7 +75,7 @@ public class AccountBill implements Serializable {
      * 操作人角色
      */
     @Column(name = "OPERATOR_ROLE", nullable = false, updatable = false, columnDefinition = "smallint comment '操作人角色'")
-    @Convert(converter = AccountOperation.EnumConvert.class)
+    @Convert(converter = Role.EnumConvert.class)
     private Role operatorRole;
 
     /**
@@ -180,4 +182,11 @@ public class AccountBill implements Serializable {
      */
     @Column(name = "BF_RATE", columnDefinition = "decimal(10,2) comment '银行手续费费率'")
     private BigDecimal bfRate;
+
+    /**
+     * 版本号
+     */
+    @Version
+    @Column(name = "VERSION", columnDefinition = "bigint comment '版本号'")
+    private Long version;
 }

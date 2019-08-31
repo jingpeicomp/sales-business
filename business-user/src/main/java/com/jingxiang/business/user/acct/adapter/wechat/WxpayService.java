@@ -3,7 +3,7 @@ package com.jingxiang.business.user.acct.adapter.wechat;
 
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.user.acct.pay.Payment;
-import com.jingxiang.business.utils.CommonUtils;
+import com.jingxiang.business.utils.MathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ public class WxpayService {
             String paymentId = requestData.get("attach");
             //支付单总金额，单位为分
             String totalFee = requestData.get("total_fee");
-            String formattedTotalFee = CommonUtils.fromDownFee(totalFee)
+            String formattedTotalFee = MathUtils.fromDownFee(totalFee)
                     .toString();
             return WxpayNotifyRequest.builder()
                     .orderId(orderId)
@@ -197,7 +197,7 @@ public class WxpayService {
         unifiedData.put("out_trade_no", payment.getSourceId());
         unifiedData.put("device_info", payment.getPayer());
         unifiedData.put("fee_type", "CNY");
-        unifiedData.put("total_fee", CommonUtils.formatDownFee(payment.getPayAmount()));
+        unifiedData.put("total_fee", MathUtils.formatDownFee(payment.getPayAmount()));
         unifiedData.put("spbill_create_ip", wxpayConfigProperties.getLocalIp());
         unifiedData.put("notify_url", wxpayConfigProperties.getNotifyUrl());
         unifiedData.put("trade_type", "APP");  // APP支付

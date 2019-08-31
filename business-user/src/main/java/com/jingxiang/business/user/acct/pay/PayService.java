@@ -14,7 +14,7 @@ import com.jingxiang.business.user.acct.common.vo.payment.PaymentCreateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentOperateRequest;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import com.jingxiang.business.user.acct.deposit.DepositService;
-import com.jingxiang.business.utils.CommonUtils;
+import com.jingxiang.business.utils.MathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -121,7 +121,7 @@ public class PayService {
 
         Payment payment = paymentOptional.get();
         BigDecimal dbAmount = payment.getPayAmount();
-        if (!Objects.equals(request.getPayAmount(), CommonUtils.formatDownFee(dbAmount))) {
+        if (!Objects.equals(request.getPayAmount(), MathUtils.formatDownFee(dbAmount))) {
             log.error("Wxpay notify fail..... pay amount is invalid by id {} and order id {}, {}", request.getPaymentId(), request.getOrderId(), request);
             wxpayPaidFail(request, payment);
             return wxpayService.buildFailNotifyResponse("Pay amount is invalid");

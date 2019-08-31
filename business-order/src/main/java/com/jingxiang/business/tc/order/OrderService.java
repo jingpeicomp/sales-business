@@ -69,7 +69,7 @@ public class OrderService implements OrderCallbackApi {
 
         if (order.needPay()) {
             //创建支付单
-            ShopVo shop = shopService.queryVoById(order.getShopId())
+            ShopVo shop = shopService.queryVo(order.getShopId())
                     .orElseThrow(() -> new ServiceException("找不到对应的店铺,ID:" + order.getShopId()));
             PaymentCreateRequest createRequest = PaymentCreateRequest.builder()
                     .payer(order.getBuyer())

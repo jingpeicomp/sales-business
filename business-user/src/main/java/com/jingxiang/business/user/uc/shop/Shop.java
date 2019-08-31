@@ -19,9 +19,9 @@ import java.time.LocalDateTime;
  * 店铺
  * Created by liuzhaoming on 2019/8/25.
  */
+@Data
 @Entity
 @Table(name = "T_BIZ_UC_SHOP")
-@Data
 @EntityListeners(AuditingEntityListener.class)
 public class Shop implements Serializable {
     /**
@@ -72,6 +72,7 @@ public class Shop implements Serializable {
     private LocalDateTime updateTime;
 
     @Version
+    @Column(name = "VERSION", columnDefinition = "bigint comment '版本号'")
     private Long version;
 
     /**

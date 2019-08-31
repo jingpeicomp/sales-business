@@ -15,6 +15,10 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -37,6 +41,8 @@ public final class CommonUtils {
     private static final String ANY_HOST = "0.0.0.0";
 
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
+
+    private static final DateTimeFormatter STANDARD_DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static String LOCAL_IP;
 
@@ -152,31 +158,64 @@ public final class CommonUtils {
     }
 
     /**
-     * 获取格式化的价格，精确到小数点后两位，单位为元
+     * 格式化时间
      *
-     * @param fee 价格
-     * @return 价格字符串
+     * @param time 时间
+     * @return 时间格式化字符串
      */
-    public static String formatDownFee(BigDecimal fee) {
-        if (null == fee) {
-            return "0.00";
-        }
-
-        return fee.setScale(2, BigDecimal.ROUND_DOWN).toString();
+    public static String formatTime(LocalDateTime time) {
+        return STANDARD_DATETIME_FORMATTER.format(time);
     }
 
     /**
-     * 将分转化为BigDecimal
+     * 格式化时间
      *
-     * @param feeString 整数字符串，单位为分
-     * @return BigDecimal
+     * @param timestamp 时间戳
+     * @return 时间格式化字符串
      */
-    public static BigDecimal fromDownFee(String feeString) {
-        if (StringUtils.isBlank(feeString)) {
-            return BigDecimal.ZERO;
+    public static String formatTime(long timestamp) {
+        LocalDateTime time = toLocalDateTime(timestamp);
+        return STANDARD_DATETIME_FORMATTER.format(time);
+    }
+
+    /**
+     * 将timestamp转化为LocalDateTime
+     *
+     * @param millTimestamp 毫秒偏移值
+     * @return 将timestamp转化为LocalDateTime
+     */
+    public static LocalDateTime toLocalDateTime(long millTimestamp) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(millTimestamp), ZoneId.systemDefault());
+    }
+
+    /**
+     * 按照指定的时间格式将字符串时间转化为LocalDateTime
+     *
+     * @param strTime       字符串时间
+     * @param timeFormatter 时间格式
+     * @return LocalDateTime
+     */
+    public static LocalDateTime parseLocalDateTime(String strTime, DateTimeFormatter timeFormatter) {
+        if (null == strTime || null == timeFormatter) {
+            return null;
         }
 
-        return new BigDecimal(feeString).divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_DOWN);
+        try {
+            return LocalDateTime.parse(strTime, timeFormatter);
+        } catch (Exception e) {
+            log.info("Parse local date time error strTime={}  , timeFormatter={}", strTime, timeFormatter);
+            return null;
+        }
+    }
+
+    /**
+     * 安装标准时间格式解析时间 "2011-12-03 10:15:30"
+     *
+     * @param strTime 字符串时间
+     * @return LocalDateTime
+     */
+    public static LocalDateTime parseLocalDateTime(String strTime) {
+        return parseLocalDateTime(strTime, STANDARD_DATETIME_FORMATTER);
     }
 
     /**

@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -48,14 +50,14 @@ public class AccountService {
      * @param payment 支付单
      */
     public void orderPaid(PaymentVo payment) {
-        log.info("Order paid account operation start, payment is {} ", payment);
+        log.info("Order paid account operation start, payment is {}", payment);
         AccountBill buyerBill = buyerOrderPaid(payment);
         log.info("Order paid account operation payer finish {}", buyerBill);
 
-        AccountBill sellerAccountBill = sellerOrderPaid(payment);
-        log.info("Order paid account operation seller finish {}", sellerAccountBill);
+        List<AccountBill> sellerAccountBills = sellerOrderPaid(payment);
+        log.info("Order paid account operation seller finish {}", sellerAccountBills);
 
-        AccountBill partnerAccountBill = partnerOrderPaid(payment, sellerAccountBill);
+        AccountBill partnerAccountBill = partnerOrderPaid(payment, sellerAccountBills.get(0));
         log.info("Order paid account operation partner finish {}", partnerAccountBill);
     }
 
@@ -85,20 +87,12 @@ public class AccountService {
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
             if (withdrawal.getType() == WithdrawalType.BALANCE) {
-                Account sellerAccount = accountRepository.findByUserIdAndType(withdrawal.getUserId(), AccountType.SELLER.getValue())
-                        .orElseThrow(() -> {
-                            log.error("Cannot find seller account {}", withdrawal.getUserId());
-                            return new ServiceException("找不到对应的账户,ID:" + withdrawal.getUserId());
-                        });
+                Account sellerAccount = findByUserIdAndType(withdrawal.getUserId(), AccountType.SELLER);
                 AccountBill sellerAccountBill = sellerAccount.sellerWithdraw(withdrawal);
                 accountRepository.save(sellerAccount);
                 billRepository.save(sellerAccountBill);
             } else if (withdrawal.getType() == WithdrawalType.SERVICE_FEE) {
-                Account partnerAccount = accountRepository.findByUserIdAndType(withdrawal.getUserId(), AccountType.PARTNER.getValue())
-                        .orElseThrow(() -> {
-                            log.error("Cannot find partner account {}", withdrawal.getUserId());
-                            return new ServiceException("找不到对应的账户,ID:" + withdrawal.getUserId());
-                        });
+                Account partnerAccount = findByUserIdAndType(withdrawal.getUserId(), AccountType.PARTNER);
                 AccountBill partnerAccountBill = partnerAccount.sellerWithdraw(withdrawal);
                 accountRepository.save(partnerAccount);
                 billRepository.save(partnerAccountBill);
@@ -110,6 +104,31 @@ public class AccountService {
     }
 
     /**
+     * 根据用户ID和账户类型查询账户流水
+     *
+     * @param userId      用户ID
+     * @param accountType 账户类型
+     * @return 账户流水列表
+     */
+    @Transactional(readOnly = true)
+    public List<AccountBill> queryBill(String userId, AccountType accountType) {
+        return billRepository.queryByUserIdAndAccountTypeOrderByCreateTimeDesc(userId, accountType);
+    }
+
+    /**
+     * 查询指定用户的账户，如果不存在则创建空白账户
+     *
+     * @param userId      用户ID
+     * @param accountType 账户类型
+     * @return 账户
+     */
+    private Account findByUserIdAndType(String userId, AccountType accountType) {
+        return accountRepository.findByUserIdAndType(userId, accountType)
+                .orElse(accountRepository.save(Account.createNew(userId, accountType)));
+
+    }
+
+    /**
      * 订单支付成功买家账户操作，涉及多个账户，手工控制事务
      *
      * @param payment 订单支付记录
@@ -117,22 +136,18 @@ public class AccountService {
      */
     private AccountBill buyerOrderPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(100);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
-            Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayer(), AccountType.USER.getValue())
-                    .orElseThrow(() -> {
-                        log.error("Cannot find payer account {}", payment.getPayer());
-                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayer());
-                    });
+            Account buyerAccount = findByUserIdAndType(payment.getPayer(), AccountType.USER);
             AccountBill bill = buyerAccount.buyerOrderPaid(payment);
             accountRepository.save(buyerAccount);
             billRepository.save(bill);
             transactionManager.commit(status);
             return bill;
         } catch (Exception e) {
-            transactionManager.rollback(status);
+//            transactionManager.rollback(status);
             throw e;
         }
     }
@@ -143,22 +158,18 @@ public class AccountService {
      * @param payment 订单支付记录
      * @return 卖家账户流水
      */
-    private AccountBill sellerOrderPaid(PaymentVo payment) {
+    private List<AccountBill> sellerOrderPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
         attribute.setTimeout(10);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
-            Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayee(), AccountType.SELLER.getValue())
-                    .orElseThrow(() -> {
-                        log.error("Cannot find seller account {}", payment.getPayee());
-                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayee());
-                    });
-            AccountBill bill = buyerAccount.sellerOrderPaid(payment);
+            Account buyerAccount = findByUserIdAndType(payment.getPayee(), AccountType.SELLER);
+            List<AccountBill> bills = buyerAccount.sellerOrderPaid(payment);
             accountRepository.save(buyerAccount);
-            billRepository.save(bill);
+            billRepository.save(bills);
             transactionManager.commit(status);
-            return bill;
+            return bills;
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw e;
@@ -188,11 +199,7 @@ public class AccountService {
                 //店铺没有合伙人，系统作为合伙人
                 partnerAccount = querySystemPartnerAccount();
             } else {
-                partnerAccount = accountRepository.findByUserIdAndType(shop.getPartner(), AccountType.PARTNER.getValue())
-                        .orElseThrow(() -> {
-                            log.error("Cannot find partner account {}", shop.getPartner());
-                            return new ServiceException("找不到对应的账户,ID:" + shop.getPartner());
-                        });
+                partnerAccount = findByUserIdAndType(shop.getPartner(), AccountType.PARTNER);
             }
             AccountBill bill = partnerAccount.partnerOrderPaid(payment, sellerAccountBill.getAmount(), sellerAccountBill.getSfRate());
             accountRepository.save(partnerAccount);
@@ -217,11 +224,7 @@ public class AccountService {
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
-            Account buyerAccount = accountRepository.findByUserIdAndType(payment.getPayer(), AccountType.SELLER.getValue())
-                    .orElseThrow(() -> {
-                        log.error("Cannot find seller account {}", payment.getPayee());
-                        return new ServiceException("找不到对应的账户,ID:" + payment.getPayee());
-                    });
+            Account buyerAccount = findByUserIdAndType(payment.getPayer(), AccountType.SELLER);
             AccountBill bill = buyerAccount.sellerSfDeposit(payment);
             accountRepository.save(buyerAccount);
             billRepository.save(bill);

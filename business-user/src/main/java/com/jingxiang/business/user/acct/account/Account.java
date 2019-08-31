@@ -7,15 +7,19 @@ import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.common.consts.*;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalVo;
+import com.jingxiang.business.utils.MathUtils;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 账户信息实体
@@ -24,6 +28,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_UC_ACCOUNT")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Account implements Serializable {
     /**
      * 账户编号
@@ -162,15 +167,60 @@ public class Account implements Serializable {
      * @param payment 订单支付记录
      * @return 卖家账户流水
      */
-    public AccountBill sellerOrderPaid(PaymentVo payment) {
-        BigDecimal bfFee = payment.getPaidAmount().multiply(bfRate);
+    public List<AccountBill> sellerOrderPaid(PaymentVo payment) {
+        AccountBill balanceBill = sellerOrderPaidBalance(payment);
+        AccountBill sfBalanceBill = sellerOrderPaidSfBalance(payment);
+        return Arrays.asList(balanceBill, sfBalanceBill);
+    }
+
+    /**
+     * 订单支付成功卖家账户业务费操作
+     *
+     * @param payment 订单支付记录
+     * @return 卖家账户业务费操作流水
+     */
+    private AccountBill sellerOrderPaidSfBalance(PaymentVo payment) {
+        BigDecimal sfFee = MathUtils.multiply(totalIncome, sfRate);
+        sfBalance = sfBalance.subtract(sfFee);
+        totalSfExpend = totalSfExpend.add(sfFee);
+        return AccountBill.builder()
+                .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
+                .accountId(id)
+                .userId(userId)
+                .accountType(type)
+                .amount(sfFee)
+                .balance(balance)
+                .fundDirection(FundDirection.CREDIT)
+                .operation(AccountOperation.PAY)
+                .operator(userId)
+                .operatorRole(Role.BUYER)
+                .requestId(payment.getSourceId())
+                .paymentId(payment.getId())
+                .sfBalance(sfBalance)
+                .target(AccountOperationTarget.SERVICE_FEE)
+                .totalBfExpend(totalBfExpend)
+                .totalExpend(totalExpend)
+                .totalIncome(totalIncome)
+                .totalSfExpend(totalSfExpend)
+                .totalSfIncome(totalSfIncome)
+                .totalBfExpend(totalBfExpend)
+                .sfRate(sfRate)
+                .bfRate(bfRate)
+                .build();
+    }
+
+    /**
+     * 订单支付成功卖家账户余额操作
+     *
+     * @param payment 订单支付记录
+     * @return 卖家账户余额操作流水
+     */
+    private AccountBill sellerOrderPaidBalance(PaymentVo payment) {
+        BigDecimal bfFee = MathUtils.multiply(payment.getPaidAmount(), bfRate);
         BigDecimal currentIncome = payment.getPaidAmount().subtract(bfFee);
         totalIncome = totalIncome.add(currentIncome);
         totalBfExpend = totalBfExpend.add(bfFee);
         balance = balance.add(currentIncome);
-        BigDecimal sfFee = totalIncome.multiply(sfRate);
-        sfBalance = sfBalance.subtract(sfFee);
-        totalSfExpend = totalSfExpend.add(sfFee);
 
         return AccountBill.builder()
                 .id(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT_BILL))
@@ -207,7 +257,7 @@ public class Account implements Serializable {
      * @return 合伙人账户流水
      */
     public AccountBill partnerOrderPaid(PaymentVo payment, BigDecimal sellerRealAmount, BigDecimal sellerSfRate) {
-        BigDecimal sfFee = sellerRealAmount.multiply(sellerSfRate);
+        BigDecimal sfFee = MathUtils.multiply(sellerRealAmount, sellerSfRate);
         totalSfIncome = totalSfIncome.add(sfFee);
 
         return AccountBill.builder()
@@ -277,7 +327,7 @@ public class Account implements Serializable {
      * @return 卖家账户流水
      */
     public AccountBill systemSfDepositAllowance(PaymentVo payment) {
-        BigDecimal bankFee = payment.getPaidAmount().multiply(bfRate);
+        BigDecimal bankFee = MathUtils.multiply(payment.getPaidAmount(), bfRate);
         totalBfExpend = totalBfExpend.add(bankFee);
         balance = balance.subtract(bankFee);
         return AccountBill.builder()
@@ -382,5 +432,20 @@ public class Account implements Serializable {
                 .sfRate(sfRate)
                 .bfRate(bfRate)
                 .build();
+    }
+
+    /**
+     * 创建一个空白账户
+     *
+     * @param userId      用户ID
+     * @param accountType 账户类型
+     * @return 账户
+     */
+    public static Account createNew(String userId, AccountType accountType) {
+        Account account = new Account();
+        account.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_ACCOUNT));
+        account.setUserId(userId);
+        account.setType(accountType);
+        return account;
     }
 }
