@@ -47,7 +47,7 @@ public class ShippingAddressControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("UA002"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.receiverProvince").value("上海"))
                 .andReturn().getResponse().getErrorMessage();
     }
@@ -62,7 +62,7 @@ public class ShippingAddressControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value("UA002"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].userId").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].userId").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].receiverProvince").value("上海"))
                 .andReturn().getResponse().getErrorMessage();
     }
@@ -85,7 +85,7 @@ public class ShippingAddressControllerTest {
                 .content(CommonUtils.toJson(address)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.receiverProvince").value("北京"))
                 .andReturn();
         ShippingAddressVo returnVo = CommonUtils.fromJson(result.getResponse().getContentAsString(), ShippingAddressVo.class);
@@ -117,7 +117,7 @@ public class ShippingAddressControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("UA002"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.userId").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.receiverProvince").value("北京"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.def").value(true))
                 .andReturn().getResponse().getErrorMessage();

@@ -29,7 +29,7 @@ public class ShippingAddressServiceTest {
 
     @Test
     public void queryDefault() {
-        ShippingAddress address = service.queryDefault("U001").orElseThrow(IllegalStateException::new);
+        ShippingAddress address = service.queryDefault("U0001").orElseThrow(IllegalStateException::new);
         assertThat(address.getId(), is("UA002"));
     }
 
@@ -41,7 +41,7 @@ public class ShippingAddressServiceTest {
 
     @Test
     public void query() {
-        List<ShippingAddress> addressList = service.query("U001");
+        List<ShippingAddress> addressList = service.query("U0001");
         assertThat(addressList, hasSize(2));
         assertThat(addressList.stream().map(ShippingAddress::getId).collect(Collectors.toList()), hasItems("UA001", "UA002"));
     }
@@ -70,7 +70,7 @@ public class ShippingAddressServiceTest {
     @Test
     public void saveUpdate() {
         ShippingAddressVo address = new ShippingAddressVo();
-        address.setUserId("U001");
+        address.setUserId("U0001");
         address.setId("UA001");
         address.setDef(false);
         address.setReceiverName("Lily");
@@ -90,7 +90,7 @@ public class ShippingAddressServiceTest {
     @Test
     public void saveUpdateDefault() {
         ShippingAddressVo address = new ShippingAddressVo();
-        address.setUserId("U001");
+        address.setUserId("U0001");
         address.setId("UA002");
         address.setDef(false);
         address.setReceiverName("Lily");

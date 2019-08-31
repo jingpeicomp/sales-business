@@ -45,7 +45,7 @@ public class ShopControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("S002"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.owner").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.owner").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("张三水果店"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.partner").value("UP001"))
                 .andReturn().getResponse().getErrorMessage();
@@ -60,7 +60,7 @@ public class ShopControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("S001"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.owner").value("U001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.owner").value("U0001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("张三小店"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.partner").value("UP001"))
                 .andReturn().getResponse().getErrorMessage();

@@ -187,10 +187,10 @@ public class Withdrawal implements Serializable {
     }
 
     /**
-     * 创建充值单
+     * 创建提现单
      *
-     * @param request 充值请求
-     * @return 充值单
+     * @param request 提现请求
+     * @return 提现单
      */
     public static Withdrawal from(WithdrawalCreateRequest request) {
         Withdrawal withdrawal = new Withdrawal();

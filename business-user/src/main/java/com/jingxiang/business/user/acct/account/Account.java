@@ -95,13 +95,13 @@ public class Account implements Serializable {
     /**
      * 银行手续费（bank free）费率
      */
-    @Column(name = "BF_RATE", columnDefinition = "decimal(10,2) comment '银行手续费费率'")
+    @Column(name = "BF_RATE", columnDefinition = "decimal(10,4) comment '银行手续费费率'")
     private BigDecimal bfRate = AcctConsts.WXPAY_FEE_RATE;
 
     /**
      * 服务费（service free）费率
      */
-    @Column(name = "SF_RATE", columnDefinition = "decimal(10,2) comment '服务费费率'")
+    @Column(name = "SF_RATE", columnDefinition = "decimal(10,4) comment '服务费费率'")
     private BigDecimal sfRate = AcctConsts.SERVICE_FEE_RATE;
 
     /**
@@ -335,7 +335,7 @@ public class Account implements Serializable {
                 .accountId(id)
                 .userId(userId)
                 .accountType(type)
-                .amount(payment.getPaidAmount())
+                .amount(bankFee)
                 .balance(balance)
                 .fundDirection(FundDirection.CREDIT)
                 .operation(AccountOperation.DEPOSIT)

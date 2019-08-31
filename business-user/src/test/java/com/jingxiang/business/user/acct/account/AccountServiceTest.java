@@ -4,6 +4,8 @@ import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.common.consts.*;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
+import com.jingxiang.business.user.acct.common.vo.withdrawal.WithdrawalVo;
+import com.jingxiang.business.user.uc.common.consts.UserConsts;
 import com.jingxiang.business.utils.CommonUtils;
 import com.jingxiang.business.utils.MathUtils;
 import org.junit.Test;
@@ -33,10 +35,25 @@ public class AccountServiceTest {
     @Test
     public void orderPaid() {
         BigDecimal orderAmount = BigDecimal.valueOf(100.59d);
-        buyerOrderPaidTest(orderAmount);
+        PaymentVo payment = PaymentVo.builder()
+                .id("P001")
+                .payAmount(orderAmount)
+                .paidAmount(orderAmount)
+                .payee("U0001")
+                .payer("U100")
+                .payTime(CommonUtils.parseLocalDateTime("2019-01-01 00:00:00"))
+                .payType(PayType.WEIXIN)
+                .platformPayId("platformId1")
+                .prePlatformPayId("prePlatformPayId1")
+                .shopId("S001")
+                .source(PaymentSource.ORDER_PAY)
+                .sourceId("T001")
+                .status(PaymentStatus.PAID)
+                .title("U100订单金额100.59")
+                .build();
 
+        buyerOrderPaidTest(payment, orderAmount);
         BigDecimal sfFee = sellerOrderPaidTest(orderAmount);
-
         partnerOrderPaidTest(sfFee);
     }
 
@@ -54,23 +71,7 @@ public class AccountServiceTest {
         assertThat(partnerBills.get(0).getAccountType(), is(AccountType.PARTNER));
     }
 
-    private void buyerOrderPaidTest(BigDecimal orderAmount) {
-        PaymentVo payment = PaymentVo.builder()
-                .id("P001")
-                .payAmount(orderAmount)
-                .paidAmount(orderAmount)
-                .payee("U001")
-                .payer("U100")
-                .payTime(CommonUtils.parseLocalDateTime("2019-01-01 00:00:00"))
-                .payType(PayType.WEIXIN)
-                .platformPayId("platformId1")
-                .prePlatformPayId("prePlatformPayId1")
-                .shopId("S001")
-                .source(PaymentSource.ORDER_PAY)
-                .sourceId("T001")
-                .status(PaymentStatus.PAID)
-                .title("U100订单金额100.59")
-                .build();
+    private void buyerOrderPaidTest(PaymentVo payment, BigDecimal orderAmount) {
         accountService.orderPaid(payment);
         List<AccountBill> buyerBills = accountService.queryBill("U100", AccountType.USER)
                 .stream()
@@ -86,7 +87,7 @@ public class AccountServiceTest {
     }
 
     private BigDecimal sellerOrderPaidTest(BigDecimal orderAmount) {
-        List<AccountBill> sellerBills = accountService.queryBill("U001", AccountType.SELLER)
+        List<AccountBill> sellerBills = accountService.queryBill("U0001", AccountType.SELLER)
                 .stream()
                 .filter(bill -> bill.getRequestId().equals("T001"))
                 .collect(Collectors.toList());
@@ -121,9 +122,76 @@ public class AccountServiceTest {
 
     @Test
     public void depositPaid() {
+        BigDecimal orderAmount = BigDecimal.valueOf(355.99d);
+        PaymentVo payment = PaymentVo.builder()
+                .id("P002")
+                .payAmount(orderAmount)
+                .paidAmount(orderAmount)
+                .payer("U200")
+                .payTime(CommonUtils.parseLocalDateTime("2019-01-01 00:00:00"))
+                .payType(PayType.WEIXIN)
+                .platformPayId("platformId2")
+                .prePlatformPayId("prePlatformPayId2")
+                .shopId("S002")
+                .source(PaymentSource.SF_DEPOSIT)
+                .sourceId("D001")
+                .status(PaymentStatus.PAID)
+                .title("D000订单金额355.99")
+                .build();
+        accountService.depositPaid(payment);
+        List<AccountBill> sellerBills = accountService.queryBill("U200", AccountType.SELLER)
+                .stream()
+                .filter(bill -> bill.getRequestId().equals("D001"))
+                .collect(Collectors.toList());
+        assertThat(sellerBills, hasSize(1));
+        assertThat(sellerBills.get(0).getPaymentId(), is("P002"));
+        assertThat(sellerBills.get(0).getFundDirection(), is(FundDirection.DEBIT));
+        assertThat(sellerBills.get(0).getAmount(), is(orderAmount));
+        assertThat(sellerBills.get(0).getTarget(), is(AccountOperationTarget.SERVICE_FEE));
+        assertThat(sellerBills.get(0).getOperation(), is(AccountOperation.DEPOSIT));
+        assertThat(sellerBills.get(0).getAccountType(), is(AccountType.SELLER));
+
+        List<AccountBill> systemBills = accountService.queryBill(UserConsts.ID_SHOP_SYSTEM_OWNER, AccountType.SELLER)
+                .stream()
+                .filter(bill -> bill.getRequestId().equals("D001"))
+                .collect(Collectors.toList());
+        BigDecimal bankFee = MathUtils.multiply(orderAmount, AcctConsts.WXPAY_FEE_RATE);
+        assertThat(systemBills, hasSize(1));
+        assertThat(systemBills.get(0).getPaymentId(), is("P002"));
+        assertThat(systemBills.get(0).getFundDirection(), is(FundDirection.CREDIT));
+        assertThat(systemBills.get(0).getAmount(), is(bankFee));
+        assertThat(systemBills.get(0).getTarget(), is(AccountOperationTarget.BANK_FEE));
+        assertThat(systemBills.get(0).getOperation(), is(AccountOperation.DEPOSIT));
+        assertThat(systemBills.get(0).getAccountType(), is(AccountType.SELLER));
     }
 
     @Test
     public void withdrawalCreated() {
+        BigDecimal orderAmount = BigDecimal.valueOf(355.99d);
+        WithdrawalVo withdrawal = WithdrawalVo.builder()
+                .amount(orderAmount)
+                .bankFee(BigDecimal.ZERO)
+                .completeStatus(CompleteStatus.DONE)
+                .id("W1001")
+                .payAmount(orderAmount)
+                .paidAmount(orderAmount)
+                .payType(PayType.WEIXIN)
+                .payStatus(PayStatus.PAID)
+                .type(WithdrawalType.BALANCE)
+                .userId("U1001")
+                .build();
+        accountService.withdrawalCreated(withdrawal);
+        List<AccountBill> sellerBills = accountService.queryBill("U1001", AccountType.SELLER)
+                .stream()
+                .filter(bill -> bill.getRequestId().equals("W1001"))
+                .collect(Collectors.toList());
+        assertThat(sellerBills, hasSize(1));
+        assertThat(sellerBills.get(0).getRequestId(), is("W1001"));
+        assertThat(sellerBills.get(0).getFundDirection(), is(FundDirection.CREDIT));
+        assertThat(sellerBills.get(0).getAmount(), is(orderAmount));
+        assertThat(sellerBills.get(0).getTarget(), is(AccountOperationTarget.BALANCE));
+        assertThat(sellerBills.get(0).getOperation(), is(AccountOperation.WITHDRAW));
+        assertThat(sellerBills.get(0).getAccountType(), is(AccountType.SELLER));
+        assertThat(sellerBills.get(0).getBalance(), is(BigDecimal.valueOf(500).subtract(orderAmount)));
     }
 }
