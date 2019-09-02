@@ -65,7 +65,7 @@ public class DepositService {
         log.info("Deposit {} create payment {}", deposit.getId(), payment);
         deposit.updatePayment(payment);
         depositRepository.save(deposit);
-        return pay(deposit);
+        return deposit;
     }
 
     /**

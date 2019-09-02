@@ -1,5 +1,6 @@
 package com.jingxiang.business.consts;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.AttributeConverter;
@@ -45,6 +46,7 @@ public enum PayType {
         return display;
     }
 
+    @JsonCreator
     public static PayType fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)

@@ -1,5 +1,6 @@
 package com.jingxiang.business.user.acct.common.consts;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.AttributeConverter;
@@ -55,6 +56,7 @@ public enum AccountType {
         return display;
     }
 
+    @JsonCreator
     public static AccountType fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)

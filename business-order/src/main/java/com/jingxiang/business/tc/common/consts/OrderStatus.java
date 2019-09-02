@@ -1,5 +1,7 @@
 package com.jingxiang.business.tc.common.consts;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import javax.persistence.AttributeConverter;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -58,6 +60,7 @@ public enum OrderStatus {
         return display;
     }
 
+    @JsonCreator
     public static OrderStatus fromValue(int value) {
         return Stream.of(values())
                 .filter(status -> status.value == value)
