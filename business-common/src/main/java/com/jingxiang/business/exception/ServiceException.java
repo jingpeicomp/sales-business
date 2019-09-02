@@ -60,8 +60,8 @@ public class ServiceException extends RuntimeException {
         return this.errorCode;
     }
 
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return null;
-    }
+//    @Override
+//    public synchronized Throwable fillInStackTrace() {
+//        return null;
+//    }
 }

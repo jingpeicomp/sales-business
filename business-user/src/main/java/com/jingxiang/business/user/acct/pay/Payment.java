@@ -13,6 +13,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_UC_PAYMENT")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Payment implements Serializable {
     /**
      * ID
@@ -111,19 +113,19 @@ public class Payment implements Serializable {
     /**
      * 支付平台的支付单号
      */
-    @Column(name = "TRADE_NO", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
+    @Column(name = "PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
     private String platformPayId;
 
     /**
      * 支付网关预支付单ID，只有微信支付有
      */
-    @Column(name = "PRE_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
+    @Column(name = "PRE_PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
     private String prePlatformPayId;
 
     /**
      * 支付单状态
      */
-    @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '支付单状态'")
+    @Column(name = "STATUS", nullable = false, columnDefinition = "smallint comment '支付单状态'")
     @Convert(converter = PaymentStatus.EnumConvert.class)
     private PaymentStatus status = PaymentStatus.UNPAID;
 

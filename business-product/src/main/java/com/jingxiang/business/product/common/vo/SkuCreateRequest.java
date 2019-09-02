@@ -3,8 +3,8 @@ package com.jingxiang.business.product.common.vo;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -34,7 +34,7 @@ public class SkuCreateRequest implements Serializable {
      * 商品销售价
      */
     @NotNull(message = "商品价格不能为空")
-    @Range(message = "商品价格不能小于0")
+    @DecimalMin(message = "商品价格不能小于0", inclusive = false, value = "0")
     private Double salePrice;
 
     /**

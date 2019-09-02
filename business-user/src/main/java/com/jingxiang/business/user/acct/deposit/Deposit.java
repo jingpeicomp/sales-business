@@ -8,11 +8,13 @@ import com.jingxiang.business.user.acct.common.consts.CompleteStatus;
 import com.jingxiang.business.user.acct.common.consts.DepositType;
 import com.jingxiang.business.user.acct.common.consts.PayStatus;
 import com.jingxiang.business.user.acct.common.vo.deposit.DepositCreateRequest;
+import com.jingxiang.business.user.acct.common.vo.deposit.DepositVo;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +28,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "T_BIZ_UC_DEPOSIT")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Deposit implements Serializable {
     /**
      * 充值单编号
@@ -45,7 +48,7 @@ public class Deposit implements Serializable {
      */
     @Column(name = "TYPE", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单类型'")
     @Convert(converter = DepositType.EnumConvert.class)
-    private DepositType type;
+    private DepositType type = DepositType.SERVICE_FEE;
 
     /**
      * 充值金额
@@ -57,7 +60,7 @@ public class Deposit implements Serializable {
      * 银行手续费
      */
     @Column(name = "BANK_FEE", columnDefinition = "decimal(20,2) comment '银行手续费'")
-    private BigDecimal bankFee;
+    private BigDecimal bankFee = BigDecimal.ZERO;
 
     /**
      * 应付金额
@@ -75,14 +78,14 @@ public class Deposit implements Serializable {
     /**
      * 充值单支付状态
      */
-    @Column(name = "PAY_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单支付状态'")
+    @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '充值单支付状态'")
     @Convert(converter = PayStatus.EnumConvert.class)
     private PayStatus payStatus;
 
     /**
      * 充值单完成状态
      */
-    @Column(name = "COMPLETE_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '充值单完成状态'")
+    @Column(name = "COMPLETE_STATUS", nullable = false, columnDefinition = "smallint comment '充值单完成状态'")
     @Convert(converter = CompleteStatus.EnumConvert.class)
     private CompleteStatus completeStatus;
 
@@ -139,13 +142,13 @@ public class Deposit implements Serializable {
     /**
      * 支付平台的支付单号
      */
-    @Column(name = "TRADE_NO", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
+    @Column(name = "PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
     private String platformPayId;
 
     /**
      * 支付网关预支付单ID，只有微信支付有
      */
-    @Column(name = "PRE_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
+    @Column(name = "PRE_PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
     private String prePlatformPayId;
 
     /**
@@ -186,6 +189,34 @@ public class Deposit implements Serializable {
         }
     }
 
+    /**
+     * 转换值对象
+     *
+     * @return 充值单值对象
+     */
+    public DepositVo toVo() {
+        return DepositVo.builder()
+                .amount(amount)
+                .autoCloseTime(autoCloseTime)
+                .bankFee(bankFee)
+                .completeStatus(completeStatus)
+                .createTime(createTime)
+                .finishTime(finishTime)
+                .paidAmount(paidAmount)
+                .payAmount(payAmount)
+                .id(id)
+                .payId(payId)
+                .payStatus(payStatus)
+                .payTime(payTime)
+                .payType(payType)
+                .platformPayId(platformPayId)
+                .prePlatformPayId(prePlatformPayId)
+                .type(type)
+                .updateTime(updateTime)
+                .userId(userId)
+                .build();
+    }
+
 
     /**
      * 创建充值单
@@ -203,6 +234,7 @@ public class Deposit implements Serializable {
         deposit.setPayAmount(request.getAmount());
         deposit.setPayStatus(PayStatus.UNPAID);
         deposit.setType(DepositType.fromValue(request.getDepositType()));
+        deposit.setUserId(request.getUserId());
         return deposit;
     }
 }

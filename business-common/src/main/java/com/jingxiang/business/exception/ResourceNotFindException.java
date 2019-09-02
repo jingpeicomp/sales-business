@@ -39,8 +39,8 @@ public class ResourceNotFindException extends ServiceException {
         super(message, cause);
     }
 
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-        return null;
-    }
+//    @Override
+//    public synchronized Throwable fillInStackTrace() {
+//        return null;
+//    }
 }
