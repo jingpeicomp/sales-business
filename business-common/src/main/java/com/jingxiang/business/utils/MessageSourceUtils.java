@@ -1,12 +1,16 @@
 package com.jingxiang.business.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.Assert;
 
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 消息资源国际化类
@@ -73,7 +77,14 @@ public final class MessageSourceUtils {
         try {
             return messageSource.getMessage(code, args, locale);
         } catch (NoSuchMessageException e) {
-            return null;
+            if (ArrayUtils.isEmpty(args)) {
+                return null;
+            } else {
+                return Arrays.stream(args)
+                        .filter(Objects::nonNull)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","));
+            }
         }
     }
 

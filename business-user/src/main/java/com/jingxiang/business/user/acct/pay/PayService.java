@@ -2,6 +2,7 @@ package com.jingxiang.business.user.acct.pay;
 
 import com.jingxiang.business.api.order.OrderCallbackApi;
 import com.jingxiang.business.api.payment.PaymentPaidRequest;
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.consts.PayType;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.ResourceNotFindException;
@@ -17,6 +18,7 @@ import com.jingxiang.business.user.acct.deposit.DepositService;
 import com.jingxiang.business.utils.MathUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +54,9 @@ public class PayService {
      *
      * @return 支付单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public PaymentVo create(PaymentCreateRequest request) {
+        log.info("Create payment {}", request);
         Payment payment = Payment.from(request);
         return paymentRepository.save(payment).toVo();
     }
@@ -63,8 +66,9 @@ public class PayService {
      *
      * @return 支付单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public PaymentVo cancel(PaymentOperateRequest request) {
+        log.info("Cancel payment {}", request);
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
                 .orElseThrow(() -> new ResourceNotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         payment.cancel();
@@ -76,8 +80,9 @@ public class PayService {
      *
      * @return 支付单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public PaymentVo pay(PaymentOperateRequest request) {
+        log.info("Pay payment {}", request);
         Payment payment = paymentRepository.findByIdAndShopId(request.getPaymentId(), request.getShopId())
                 .orElseThrow(() -> new ResourceNotFindException("找不到对应的支付单,店铺ID：" + request.getShopId() + ",支付单ID：" + request.getPaymentId()));
         if (!payment.canPay()) {
@@ -100,7 +105,7 @@ public class PayService {
      * @param orderId 订单ID
      * @return 符合条件的支付单
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<PaymentVo> queryByIdAndOrderId(String id, String orderId) {
         return paymentRepository.findByIdAndSourceId(id, orderId).map(Payment::toVo);
     }
@@ -111,6 +116,7 @@ public class PayService {
      * @param id 支付单ID
      * @return 支付单
      */
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<PaymentVo> queryById(String id) {
         return Optional.ofNullable(paymentRepository.findOne(id))
                 .map(Payment::toVo);
@@ -122,8 +128,9 @@ public class PayService {
      * @param request 微信回调信息
      * @return 返回微信的回调响应结果
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public String updateWxpayNotification(WxpayNotifyRequest request) {
+        log.info("Update wxpay notification {}", request);
         Optional<Payment> paymentOptional = paymentRepository.findByIdAndSourceId(request.getPaymentId(), request.getOrderId());
         if (!paymentOptional.isPresent()) {
             log.error("Wxpay notify fail..... cannot find payment by id {} and order id {}", request.getPaymentId(), request.getOrderId());

@@ -148,7 +148,7 @@ public class AccountService {
             transactionManager.commit(status);
             return bill;
         } catch (Exception e) {
-//            transactionManager.rollback(status);
+            transactionManager.rollback(status);
             throw e;
         }
     }

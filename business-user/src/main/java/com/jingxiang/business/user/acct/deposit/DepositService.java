@@ -1,6 +1,7 @@
 package com.jingxiang.business.user.acct.deposit;
 
 import com.jingxiang.business.api.payment.PaymentPaidRequest;
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.exception.ResourceNotFindException;
 import com.jingxiang.business.user.acct.common.consts.CompleteStatus;
 import com.jingxiang.business.user.acct.common.consts.PaymentSource;
@@ -46,7 +47,7 @@ public class DepositService {
      * @param request 充值单创建请求
      * @return 充值单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Deposit create(DepositCreateRequest request) {
         Deposit deposit = Deposit.from(request);
         depositRepository.save(deposit);
@@ -74,7 +75,7 @@ public class DepositService {
      * @param id 充值单 ID
      * @return 充值单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Deposit pay(String id, String userId) {
         Deposit deposit = depositRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFindException("找不到对应的充值单"));
@@ -92,7 +93,7 @@ public class DepositService {
      *
      * @param request 订单支付结果回调
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public void paid(PaymentPaidRequest request) {
         Deposit deposit = depositRepository.findOne(request.getSourceId());
         if (null == deposit) {
@@ -112,7 +113,7 @@ public class DepositService {
      * @param pageable 分页信息
      * @return 充值单列表
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Page<Deposit> query(String userId, CompleteStatus status, Pageable pageable) {
         return depositRepository.findByUserIdAndCompleteStatusOrderByFinishTimeDesc(userId, status, pageable);
     }
@@ -123,7 +124,7 @@ public class DepositService {
      * @param id 充值单ID
      * @return 充值单详情
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<Deposit> queryById(String id) {
         return Optional.ofNullable(depositRepository.findOne(id));
     }

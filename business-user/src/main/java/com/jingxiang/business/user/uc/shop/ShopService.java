@@ -1,5 +1,6 @@
 package com.jingxiang.business.user.uc.shop;
 
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.exception.ResourceNotFindException;
 import com.jingxiang.business.user.uc.common.vo.shop.ShopCreateRequest;
 import com.jingxiang.business.user.uc.common.vo.shop.ShopUpdateRequest;
@@ -27,7 +28,7 @@ public class ShopService {
      * @param request 店铺创建请求
      * @return 店铺
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Shop create(ShopCreateRequest request) {
         Shop shop = Shop.from(request);
         return shopRepository.save(shop);
@@ -39,7 +40,7 @@ public class ShopService {
      * @param request 店铺更新请求
      * @return 店铺
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Shop update(ShopUpdateRequest request) {
         Shop shop = query(request.getShopId())
                 .orElseThrow(() -> new ResourceNotFindException("找不到对应的店铺"));
@@ -53,7 +54,7 @@ public class ShopService {
      * @param id 店铺ID
      * @return 对应的店铺对象
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<Shop> query(String id) {
         return Optional.ofNullable(shopRepository.findOne(id));
     }
@@ -64,7 +65,7 @@ public class ShopService {
      * @param id 店铺ID
      * @return 对应的店铺值对象
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<ShopVo> queryVo(String id) {
         return Optional.ofNullable(shopRepository.findOne(id))
                 .map(Shop::toVo);
@@ -76,7 +77,7 @@ public class ShopService {
      * @param groupId 群ID
      * @return 店铺信息
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<Shop> queryByGroupId(String groupId) {
         return shopRepository.findByGroupId(groupId);
     }
@@ -87,7 +88,7 @@ public class ShopService {
      * @param id 店铺ID
      * @return 店主用户ID
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public String queryOwner(String id) {
         return shopRepository.findOwnerById(id);
     }
@@ -98,7 +99,7 @@ public class ShopService {
      * @param id 店铺ID
      * @return 合伙人用户ID
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public String queryPartner(String id) {
         return shopRepository.findPartnerById(id);
     }

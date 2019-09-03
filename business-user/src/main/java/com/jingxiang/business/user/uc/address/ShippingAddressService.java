@@ -1,5 +1,6 @@
 package com.jingxiang.business.user.uc.address;
 
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.id.IdFactory;
 import com.jingxiang.business.user.uc.common.consts.UserConsts;
 import com.jingxiang.business.user.uc.common.vo.address.ShippingAddressVo;
@@ -30,7 +31,7 @@ public class ShippingAddressService {
      * @param userId 用户帐号ID
      * @return 默认收货地址
      */
-    @Transactional(readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Optional<ShippingAddress> queryDefault(String userId) {
         return repository.findDefault(userId);
     }
@@ -41,7 +42,7 @@ public class ShippingAddressService {
      * @param userId 用户ID
      * @return 收货地址列表
      */
-    @Transactional(readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public List<ShippingAddress> query(String userId) {
         return repository.findByUserId(userId);
     }
@@ -54,7 +55,7 @@ public class ShippingAddressService {
      * @param vo 收货地址
      * @return 保存后的收货地址
      */
-    @Transactional(timeout = 100)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public ShippingAddress save(ShippingAddressVo vo) {
         ShippingAddress shippingAddress;
         if (StringUtils.isBlank(vo.getId())) {
@@ -91,6 +92,7 @@ public class ShippingAddressService {
      * @param userId 用户ID
      * @param id     地址ID
      */
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public void delete(String userId, String id) {
         Optional<ShippingAddress> addressOptional = repository.findByIdAndUserId(userId, id);
         addressOptional.ifPresent(shippingAddress -> repository.delete(shippingAddress));
