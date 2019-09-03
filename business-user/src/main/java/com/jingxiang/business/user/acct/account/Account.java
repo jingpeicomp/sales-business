@@ -26,7 +26,7 @@ import java.util.List;
  * Created by liuzhaoming on 2019/8/25.
  */
 @Entity
-@Table(name = "T_BIZ_UC_ACCOUNT")
+@Table(name = "T_BIZ_UC_ACCOUNT", indexes = {@Index(unique = true, columnList = "USER_ID,TYPE", name = "UDX_A_USER_ID_TYPE")})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Account implements Serializable {

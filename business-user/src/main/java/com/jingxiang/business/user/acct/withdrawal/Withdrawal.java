@@ -13,6 +13,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,8 +25,11 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/27.
  */
 @Entity
-@Table(name = "T_BIZ_UC_WITHDRAWAL")
+@Table(name = "T_BIZ_UC_WITHDRAWAL", indexes = {@Index(columnList = "USER_ID,TYPE", name = "IDX_W_USER_ID_TYPE"),
+        @Index(columnList = "USER_ID,COMPLETE_STATUS", name = "IDX_W_USER_ID_COMPLETE_STATUS"),
+        @Index(columnList = "CREATE_TIME", name = "IDX_W_CREATE_TIME")})
 @Data
+@EntityListeners({AuditingEntityListener.class})
 public class Withdrawal implements Serializable {
     /**
      * 提现单编号
@@ -75,22 +79,22 @@ public class Withdrawal implements Serializable {
     /**
      * 提现单支付状态
      */
-    @Column(name = "PAY_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '提现单支付状态'")
+    @Column(name = "PAY_STATUS", nullable = false, columnDefinition = "smallint comment '提现单支付状态'")
     @Convert(converter = PayStatus.EnumConvert.class)
     private PayStatus payStatus;
 
     /**
      * 提现单完成状态
      */
-    @Column(name = "COMPLETE_STATUS", nullable = false, updatable = false, columnDefinition = "smallint comment '提现单完成状态'")
+    @Column(name = "COMPLETE_STATUS", nullable = false, columnDefinition = "smallint comment '提现单完成状态'")
     @Convert(converter = CompleteStatus.EnumConvert.class)
     private CompleteStatus completeStatus;
 
     /**
      * 创建时间
      */
-    @Column(name = "CREATE_TIME", updatable = false, columnDefinition = "datetime not null default CURRENT_TIMESTAMP comment '创建时间'")
     @CreatedDate
+    @Column(name = "CREATE_TIME", updatable = false, columnDefinition = "datetime not null default CURRENT_TIMESTAMP comment '创建时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime createTime;
 
@@ -105,7 +109,7 @@ public class Withdrawal implements Serializable {
     /**
      * 提现单成功时间
      */
-    @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '订单成功时间'")
+    @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '提现单成功时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime finishTime;
 
@@ -133,13 +137,13 @@ public class Withdrawal implements Serializable {
     /**
      * 支付平台的支付单号
      */
-    @Column(name = "TRADE_NO", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
+    @Column(name = "PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付平台的支付单号'")
     private String platformPayId;
 
     /**
      * 支付网关预支付单ID，只有微信支付有
      */
-    @Column(name = "PRE_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
+    @Column(name = "PRE_PLATFORM_PAY_ID", columnDefinition = "varchar(64) comment '支付网关预支付单ID'")
     private String prePlatformPayId;
 
     /**
@@ -199,8 +203,10 @@ public class Withdrawal implements Serializable {
         withdrawal.setCompleteStatus(CompleteStatus.DOING);
         withdrawal.setId(IdFactory.createUserId(AcctConsts.ID_PREFIX_WITHDRAWAL));
         withdrawal.setPayAmount(request.getAmount());
+        withdrawal.setPaidAmount(request.getAmount());
         withdrawal.setPayStatus(PayStatus.UNPAID);
         withdrawal.setType(WithdrawalType.fromValue(request.getWithdrawalType()));
+        withdrawal.setUserId(request.getUserId());
         return withdrawal;
     }
 }

@@ -20,10 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 充值单API接口
- * Created by liuzhaoming on 2019/8/31.
- */
 @Api(value = "Deposit API", description = "充值单REST API接口")
 @RestController
 @RequestMapping("/api/business/acct/deposit")

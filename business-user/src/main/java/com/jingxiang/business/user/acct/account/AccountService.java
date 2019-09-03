@@ -1,5 +1,6 @@
 package com.jingxiang.business.user.acct.account;
 
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.user.acct.account.bill.AccountBill;
 import com.jingxiang.business.user.acct.account.bill.AccountBillRepository;
@@ -82,7 +83,7 @@ public class AccountService {
      */
     public void withdrawalCreated(WithdrawalVo withdrawal) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -93,7 +94,7 @@ public class AccountService {
                 billRepository.save(sellerAccountBill);
             } else if (withdrawal.getType() == WithdrawalType.SERVICE_FEE) {
                 Account partnerAccount = findByUserIdAndType(withdrawal.getUserId(), AccountType.PARTNER);
-                AccountBill partnerAccountBill = partnerAccount.sellerWithdraw(withdrawal);
+                AccountBill partnerAccountBill = partnerAccount.partnerWithdraw(withdrawal);
                 accountRepository.save(partnerAccount);
                 billRepository.save(partnerAccountBill);
             }
@@ -124,7 +125,7 @@ public class AccountService {
      */
     private Account findByUserIdAndType(String userId, AccountType accountType) {
         return accountRepository.findByUserIdAndType(userId, accountType)
-                .orElse(accountRepository.save(Account.createNew(userId, accountType)));
+                .orElseGet(() -> accountRepository.save(Account.createNew(userId, accountType)));
 
     }
 
@@ -136,7 +137,7 @@ public class AccountService {
      */
     private AccountBill buyerOrderPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(100);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -160,7 +161,7 @@ public class AccountService {
      */
     private List<AccountBill> sellerOrderPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -190,7 +191,7 @@ public class AccountService {
                     return new ServiceException("找不到对应的店铺,ID:" + payment.getShopId());
                 });
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -220,7 +221,7 @@ public class AccountService {
      */
     private AccountBill sellerDepositPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -244,7 +245,7 @@ public class AccountService {
      */
     private AccountBill systemDepositPaid(PaymentVo payment) {
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setTimeout(10);
+        attribute.setTimeout(BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS);
         TransactionDefinition def = new DefaultTransactionDefinition(attribute);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {

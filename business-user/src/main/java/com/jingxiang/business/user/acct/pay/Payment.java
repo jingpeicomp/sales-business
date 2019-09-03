@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/8.
  */
 @Entity
-@Table(name = "T_BIZ_UC_PAYMENT")
+@Table(name = "T_BIZ_UC_PAYMENT", indexes = {@Index(columnList = "PAYER", name = "IDX_PAYER")})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Payment implements Serializable {

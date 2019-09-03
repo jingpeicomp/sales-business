@@ -26,7 +26,9 @@ import java.time.LocalDateTime;
  * Created by liuzhaoming on 2019/8/26.
  */
 @Entity
-@Table(name = "T_BIZ_UC_DEPOSIT")
+@Table(name = "T_BIZ_UC_DEPOSIT", indexes = {@Index(columnList = "USER_ID,TYPE", name = "IDX_D_USER_ID_TYPE"),
+        @Index(columnList = "USER_ID,COMPLETE_STATUS", name = "IDX_D_USER_ID_COMPLETE_STATUS"),
+        @Index(columnList = "FINISH_TIME", name = "IDX_D_FINISH_TIME")})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Deposit implements Serializable {
@@ -108,14 +110,14 @@ public class Deposit implements Serializable {
     /**
      * 充值单成功时间
      */
-    @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '订单成功时间'")
+    @Column(name = "FINISH_TIME", columnDefinition = "datetime comment '充值单成功时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime finishTime;
 
     /**
      * 自动关闭充值单时间
      */
-    @Column(name = "AUTO_CLOSE_TIME", columnDefinition = "datetime comment '自动关闭订单时间'")
+    @Column(name = "AUTO_CLOSE_TIME", columnDefinition = "datetime comment '自动关闭充值单时间'")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime autoCloseTime;
 

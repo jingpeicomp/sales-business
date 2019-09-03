@@ -1,16 +1,17 @@
-package com.jingxiang.business.user.acct.common.vo.deposit;
+package com.jingxiang.business.user.acct.common.vo.withdrawal;
 
 import com.jingxiang.business.user.acct.common.consts.CompleteStatus;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * 充值单查询条件
+ * 提现单查询条件
  * Created by liuzhaoming on 2019/9/2.
  */
 @Data
-public class DepositQueryCondition implements Serializable {
+public class WithdrawalQueryCondition implements Serializable {
     /**
      * 用户ID，无需前端传入
      */
@@ -27,9 +28,9 @@ public class DepositQueryCondition implements Serializable {
     private int size = 20;
 
     /**
-     * 充值单状态
+     * 提现单状态
      *
-     * @see com.jingxiang.business.user.acct.common.consts.CompleteStatus
+     * @see CompleteStatus
      */
-    private int completeStatus = CompleteStatus.DONE.getValue();
+    private Integer completeStatus;
 }

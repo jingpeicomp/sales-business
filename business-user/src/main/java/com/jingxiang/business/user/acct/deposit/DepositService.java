@@ -35,7 +35,7 @@ public class DepositService {
     private PayService payService;
 
     /**
-     * 充值支付单名称
+     * 充值充值单名称
      */
     @Value("${jingxiang.business.user.sfDepositName:服务费充值}")
     private String sfDepositName;
@@ -108,9 +108,9 @@ public class DepositService {
      * 根据用户ID和完成状态查询充值单
      *
      * @param userId   用户ID
-     * @param status   支付单完成状态
+     * @param status   提现单完成状态
      * @param pageable 分页信息
-     * @return 支付单列表
+     * @return 充值单列表
      */
     @Transactional(timeout = 10, readOnly = true)
     public Page<Deposit> query(String userId, CompleteStatus status, Pageable pageable) {

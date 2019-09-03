@@ -4,6 +4,7 @@ import com.jingxiang.business.user.acct.common.consts.AccountType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,5 +24,13 @@ public interface AccountRepository extends JpaRepository<Account, String> {
      * @see com.jingxiang.business.user.acct.common.consts.AccountType
      */
     Optional<Account> findByUserIdAndType(String userId, AccountType type);
+
+    /**
+     * 根据用户ID查询账户
+     *
+     * @param userId 用户ID
+     * @return 账户列表
+     */
+    List<Account> findByUserId(String userId);
 
 }

@@ -62,7 +62,7 @@ public class DepositControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value("D001"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].amount").value(BigDecimal.valueOf(100.99D)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].payStatus").value(PayStatus.PAID.getValue()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].payStatus").value(PayStatus.UNPAID.getValue()))
                 .andReturn().getResponse().getErrorMessage();
     }
 
@@ -102,7 +102,7 @@ public class DepositControllerTest {
         }
     }
 
-//    @Test
+    //    @Test
     public void pay() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/api/business/acct/deposit/{id}/pay", "D001")
                 .accept(MediaType.APPLICATION_JSON)
