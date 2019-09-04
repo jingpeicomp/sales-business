@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -33,8 +34,12 @@ import java.util.stream.Collectors;
  * Created by liuzhaoming on 2019/8/3.
  */
 @Entity
-@Table(name = "T_BIZ_TC_ORDER")
+@Table(name = "T_BIZ_TC_ORDER", indexes = {@Index(columnList = "BUYER", name = "IDX_T_BUYER"),
+        @Index(columnList = "SHOP_ID", name = "IDX_T_SHOP"),
+        @Index(columnList = "AUTO_CLOSE_TIME", name = "IDX_T_AUTO_CLOSE_TIME"),
+        @Index(columnList = "AUTO_CONFIRM_TIME", name = "IDX_T_AUTO_CONFIRM_TIME")})
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Order implements Serializable, Describable {
     /**
      * 订单编号

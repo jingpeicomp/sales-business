@@ -55,4 +55,13 @@ public interface SkuRepository extends JpaRepository<Sku, String> {
      * @return SKU列表
      */
     List<Sku> findByShopIdAndIdIn(String shopId, List<String> idList);
+
+    /**
+     * 根据店铺ID和商品ID查询SKU
+     *
+     * @param shopId 店铺ID
+     * @param skuId  商品ID
+     * @return SKU
+     */
+    Optional<Sku> findByShopIdAndId(String shopId, String skuId);
 }

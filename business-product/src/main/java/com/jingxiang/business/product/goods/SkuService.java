@@ -1,5 +1,6 @@
 package com.jingxiang.business.product.goods;
 
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.exception.ResourceNotFindException;
 import com.jingxiang.business.product.common.vo.SkuVo;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class SkuService {
      * @param sku 商品
      * @return 更新成功的商品信息
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Sku save(Sku sku) {
         return skuRepository.save(sku);
     }
@@ -42,7 +43,7 @@ public class SkuService {
      * @param sku sku
      * @return 更新成功的SKU信息
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Sku update(Sku sku) {
         Sku dbSku = skuRepository.findByIdAndShopId(sku.getId(), sku.getShopId())
                 .orElseThrow(() -> new ResourceNotFindException("找不到对应的商品"));
@@ -58,7 +59,7 @@ public class SkuService {
      * @param publishTime 发布时间
      * @return 是否修改成功
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public boolean updatePublishTime(String shopId, String skuId, LocalDateTime publishTime) {
         int updateSkuNum = skuRepository.updatePublishTime(shopId, skuId, publishTime);
         return updateSkuNum > 0;
@@ -71,7 +72,7 @@ public class SkuService {
      * @param skuId  SKU ID
      * @return 是否修改成功
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public boolean updatePublishTime(String shopId, String skuId) {
         return updatePublishTime(shopId, skuId, LocalDateTime.now());
     }
@@ -83,7 +84,7 @@ public class SkuService {
      * @param pageable 分页查询请求
      * @return SKU分页查询结果
      */
-    @Transactional(readOnly = true, timeout = 10)
+    @Transactional(readOnly = true, timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Page<Sku> query(String shopId, Pageable pageable) {
         return skuRepository.findByShopIdOrderByUpdateTimeDesc(shopId, pageable);
     }
@@ -95,7 +96,7 @@ public class SkuService {
      * @param idList SKU ID列表
      * @return SKU值对象列表
      */
-    @Transactional(readOnly = true, timeout = 10)
+    @Transactional(readOnly = true, timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public List<SkuVo> queryVo(String shopId, List<String> idList) {
         List<Sku> skuList = skuRepository.findByShopIdAndIdIn(shopId, idList);
         return skuList.stream()
@@ -110,7 +111,7 @@ public class SkuService {
      * @param skuId  商品ID
      * @return 商品，如果操作失败返回null
      */
-    @Transactional(timeout = 100)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Sku publish(String shopId, String skuId) {
         Sku sku = skuRepository.findByIdAndShopId(skuId, shopId)
                 .orElseThrow(ResourceNotFindException::new);

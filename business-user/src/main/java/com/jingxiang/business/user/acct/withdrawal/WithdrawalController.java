@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by liuzhaoming on 2019/9/2.
  */
 
-@Api(value = "Deposit API", description = "充值单REST API接口")
+@Api(value = "Deposit API", description = "提现单REST API接口")
 @RestController
 @RequestMapping("/api/business/acct/withdrawal")
 @Validated

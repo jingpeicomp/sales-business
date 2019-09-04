@@ -7,10 +7,7 @@ import com.jingxiang.business.tc.common.vo.order.OrderProductParam;
 import com.jingxiang.business.tc.common.vo.order.OrderProductVo;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -19,7 +16,7 @@ import java.math.BigDecimal;
  * Created by liuzhaoming on 2019/8/6.
  */
 @Entity
-@Table(name = "T_BIZ_TC_ORDER_PRODUCT")
+@Table(name = "T_BIZ_TC_ORDER_PRODUCT", indexes = {@Index(columnList = "ORDER_ID", name = "IDX_T_ORDER_ID")})
 @Data
 public class OrderProduct implements Serializable {
 

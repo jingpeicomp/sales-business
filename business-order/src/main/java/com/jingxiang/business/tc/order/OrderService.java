@@ -2,6 +2,7 @@ package com.jingxiang.business.tc.order;
 
 import com.jingxiang.business.api.order.OrderCallbackApi;
 import com.jingxiang.business.api.payment.PaymentPaidRequest;
+import com.jingxiang.business.base.BusinessConsts;
 import com.jingxiang.business.consts.Role;
 import com.jingxiang.business.exception.ServiceException;
 import com.jingxiang.business.product.common.vo.SkuVo;
@@ -43,7 +44,7 @@ public class OrderService implements OrderCallbackApi {
     private SkuService skuService;
 
     @Autowired
-    private PayService paymentService;
+    private PayService payService;
 
     @Autowired
     private ShopService shopService;
@@ -54,7 +55,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 下单请求
      * @return 订单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Order create(OrderCreateRequest request) {
         List<String> skuIds = request.getProducts().stream()
                 .map(OrderProductParam::getSkuId)
@@ -81,7 +82,7 @@ public class OrderService implements OrderCallbackApi {
                     .title(order.calculateTitle())
                     .source(PaymentSource.ORDER_PAY)
                     .build();
-            PaymentVo paymentVo = paymentService.create(createRequest);
+            PaymentVo paymentVo = payService.create(createRequest);
             order.updatePayment(paymentVo);
         }
         return orderRepository.save(order);
@@ -93,7 +94,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 订单关闭请求
      * @return 订单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Order close(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -108,7 +109,7 @@ public class OrderService implements OrderCallbackApi {
                     .paymentId(order.getPayment().getPayId())
                     .shopId(order.getShopId())
                     .build();
-            paymentService.cancel(operateRequest);
+            payService.cancel(operateRequest);
         }
         return orderRepository.save(order);
     }
@@ -119,7 +120,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 订单支付请求
      * @return 订单
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Order pay(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -134,7 +135,7 @@ public class OrderService implements OrderCallbackApi {
                     .paymentId(order.getPayment().getPayId())
                     .shopId(order.getShopId())
                     .build();
-            PaymentVo paymentVo = paymentService.pay(operateRequest);
+            PaymentVo paymentVo = payService.pay(operateRequest);
             order.updatePayment(paymentVo);
             return orderRepository.save(order);
         }
@@ -148,7 +149,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 订单支付结果回调
      */
     @Override
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public void paid(PaymentPaidRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getSourceId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -174,7 +175,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 订单操作请求
      * @return 订单发货
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Order deliver(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -194,7 +195,7 @@ public class OrderService implements OrderCallbackApi {
      * @param request 订单操作请求
      * @return 订单确认收货
      */
-    @Transactional(timeout = 10)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS)
     public Order confirm(OrderOperateRequest request) {
         Optional<Order> optional = orderRepository.findByIdAndShopId(request.getOrderId(), request.getShopId());
         if (!optional.isPresent()) {
@@ -214,7 +215,7 @@ public class OrderService implements OrderCallbackApi {
      * @param condition 订单查询条件
      * @return 符合条件的订单列表
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public Page<OrderVo> query(OrderQueryCondition condition) {
         Pageable pageRequest = new PageRequest(condition.getPage(), condition.getSize(), Sort.Direction.DESC, "createTime");
         OrderStatus orderStatus = OrderStatus.fromValue(condition.getOrderStatus());
@@ -233,7 +234,7 @@ public class OrderService implements OrderCallbackApi {
      *
      * @return 需要关闭的订单列表
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public List<Order> queryNeedAutoCloseOrders() {
         LocalDateTime datelineTime = LocalDateTime.now().plusSeconds(OrderConsts.ORDER_AUTO_CLOSE_TIME_IN_SECONDS);
         return orderRepository.findNeedAutoCloseOrders(datelineTime);
@@ -244,7 +245,7 @@ public class OrderService implements OrderCallbackApi {
      *
      * @return 需要自动确认收货的订单列表
      */
-    @Transactional(timeout = 10, readOnly = true)
+    @Transactional(timeout = BusinessConsts.TRANSACTION_TIMEOUT_IN_SECONDS, readOnly = true)
     public List<Order> queryNeedAutoConfirmOrders() {
         return orderRepository.findNeedAutoConfirmOrders(LocalDateTime.now());
     }
