@@ -27,7 +27,7 @@ public class OrderProduct implements Serializable {
     /**
      * 订单ID
      */
-    @Column(name = "ORDER_ID", nullable = false, updatable = false, columnDefinition = "varchar(32) not null comment '订单ID'")
+    @Column(name = "ORDER_ID", columnDefinition = "varchar(32)  comment '订单ID'")
     private String orderId;
 
     /**

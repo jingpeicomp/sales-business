@@ -5,6 +5,7 @@ import com.jingxiang.business.tc.common.vo.order.OrderCreateRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderOperateRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderQueryCondition;
 import com.jingxiang.business.tc.common.vo.order.OrderVo;
+import com.jingxiang.business.utils.AuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -63,6 +64,7 @@ public class OrderController {
     @RequestMapping(path = "/{shopId}/orders", method = RequestMethod.POST)
     public OrderVo create(@PathVariable String shopId, OrderCreateRequest request) {
         request.setShopId(shopId);
+        request.setBuyer(AuthUtils.getUserId());
         return Optional.ofNullable(orderService.create(request))
                 .map(Order::toVo)
                 .orElseThrow(() -> {

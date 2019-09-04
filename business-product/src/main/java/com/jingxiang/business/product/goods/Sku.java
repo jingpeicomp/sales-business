@@ -23,7 +23,8 @@ import java.util.Objects;
  * Created by liuzhaoming on 2019/8/2.
  */
 @Entity
-@Table(name = "T_BIZ_PC_SKU")
+@Table(name = "T_BIZ_PC_SKU", indexes = {@Index(columnList = "SHOP_ID", name = "IDX_S_SHOP"),
+        @Index(columnList = "UPDATE_TIME", name = "IDX_S_UPDATE_TIME")})
 @Data
 @EntityListeners(AuditingEntityListener.class)
 public class Sku implements Serializable {

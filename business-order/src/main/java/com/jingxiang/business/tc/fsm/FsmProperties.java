@@ -53,7 +53,7 @@ public class FsmProperties extends FsmBaseBean {
      */
     @Override
     public void checkAndCorrect() {
-        if (MapUtils.isNotEmpty(transitionMap)) {
+        if (MapUtils.isEmpty(transitionMap)) {
             Map<FsmState, FsmTransition> stateTransitionMap = new HashMap<>();
             transitions.forEach(fsmTransition -> {
                 FsmTransition transition = stateTransitionMap.putIfAbsent(fsmTransition.getFromState(), fsmTransition);

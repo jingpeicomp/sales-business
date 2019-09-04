@@ -1,7 +1,10 @@
 package com.jingxiang.business.tc.common.vo.order;
 
 import com.jingxiang.business.consts.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,6 +12,9 @@ import java.io.Serializable;
  * 订单操作请求
  * Created by liuzhaoming on 2019/8/21.
  */
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class OrderOperateRequest implements Serializable {
     /**

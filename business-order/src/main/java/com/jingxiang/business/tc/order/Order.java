@@ -16,6 +16,7 @@ import com.jingxiang.business.tc.fsm.FsmTransitionResult;
 import com.jingxiang.business.user.acct.common.vo.payment.PaymentVo;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
@@ -319,8 +320,8 @@ public class Order implements Serializable, Describable {
      * @return 订单标题
      */
     public String calculateTitle() {
-        String title = id + getProductDesc();
-        return title.substring(60);
+        String title = id + "-" + getProductDesc();
+        return StringUtils.substring(title, 0, 60);
     }
 
     /**

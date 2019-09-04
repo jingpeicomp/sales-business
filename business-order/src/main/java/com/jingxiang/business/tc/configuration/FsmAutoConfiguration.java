@@ -3,10 +3,12 @@ package com.jingxiang.business.tc.configuration;
 import com.jingxiang.business.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -15,16 +17,17 @@ import java.util.stream.Collectors;
  * FSM自动配置类
  * Created by liuzhaoming on 2019/8/5.
  */
-@Configuration
-@ConditionalOnProperty(name = "jingxiang.business.order.fsmPropertyFile")
+@Component
+//@Configuration
 @Slf4j
 public class FsmAutoConfiguration {
 
     @Value("${jingxiang.business.order.fsmPropertyFile}")
     private String orderFsmPropertyFileString;
 
-    @PostConstruct
-    public void initOrderFsmFactory() {
+    @Bean
+    @ConditionalOnProperty(name = "jingxiang.business.order.fsmPropertyFile")
+    public OrderFsmFactory initOrderFsmFactory() {
         List<String> orderTypeAndFiles = CommonUtils.splitStr(orderFsmPropertyFileString);
         List<String[]> formattedOrderTypeAndFiles = orderTypeAndFiles.stream()
                 .map(orderTypeAndFileStr -> {
@@ -39,5 +42,6 @@ public class FsmAutoConfiguration {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         OrderFsmFactory.init(formattedOrderTypeAndFiles);
+        return OrderFsmFactory.INSTANCE;
     }
 }

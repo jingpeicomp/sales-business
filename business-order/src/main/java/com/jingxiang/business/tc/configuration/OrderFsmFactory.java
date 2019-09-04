@@ -12,10 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by liuzhaoming on 2019/8/5.
  */
 public class OrderFsmFactory {
+
+    static OrderFsmFactory INSTANCE = null;
+
     /**
      * 订单类型
      */
-    private static final Map<String, Fsm> orderTypeNameAndFsm = new ConcurrentHashMap<>();
+    private final Map<String, Fsm> orderTypeNameAndFsm = new ConcurrentHashMap<>();
 
     private OrderFsmFactory() {
     }
@@ -26,9 +29,10 @@ public class OrderFsmFactory {
      * @param orderTypeAndFiles 订单类型和对应的json文件
      */
     static void init(List<String[]> orderTypeAndFiles) {
+        INSTANCE = new OrderFsmFactory();
         orderTypeAndFiles.forEach(orderTypeAndFile -> {
             FsmProperties fsmProperties = FsmProperties.load(orderTypeAndFile[1]);
-            orderTypeNameAndFsm.put(orderTypeAndFile[0], new Fsm(fsmProperties));
+            INSTANCE.orderTypeNameAndFsm.put(orderTypeAndFile[0], new Fsm(fsmProperties));
         });
 
     }
@@ -40,6 +44,6 @@ public class OrderFsmFactory {
      * @return 有限状态机
      */
     public static Fsm getFsm(String orderTypeName) {
-        return orderTypeNameAndFsm.get(orderTypeName);
+        return INSTANCE.orderTypeNameAndFsm.get(orderTypeName);
     }
 }

@@ -35,7 +35,6 @@ public class SkuServiceTest {
     private SkuRepository skuRepository;
 
     @Test
-    @Transactional
     public void save() {
         Sku sku = new Sku();
         sku.setId(IdFactory.createProductId(ProductConsts.ID_PREFIX_SKU));
@@ -50,6 +49,7 @@ public class SkuServiceTest {
         skuService.save(sku);
         Sku dbSku = skuRepository.findOne(sku.getId());
         assertThat(dbSku, equalTo(sku));
+        skuRepository.delete(dbSku.getId());
     }
 
     @Test

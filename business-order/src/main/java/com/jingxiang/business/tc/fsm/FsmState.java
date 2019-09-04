@@ -104,7 +104,7 @@ public class FsmState extends FsmBaseBean {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
+        int result = 0;
         if (isSimple()) {
             result = 31 * result + state.hashCode();
         } else {
