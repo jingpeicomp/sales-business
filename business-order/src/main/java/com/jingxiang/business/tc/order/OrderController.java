@@ -6,9 +6,12 @@ import com.jingxiang.business.tc.common.vo.order.OrderOperateRequest;
 import com.jingxiang.business.tc.common.vo.order.OrderQueryCondition;
 import com.jingxiang.business.tc.common.vo.order.OrderVo;
 import com.jingxiang.business.utils.AuthUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +23,8 @@ import java.util.Optional;
  * 订单Controller
  * Created by liuzhaoming on 2019/8/21.
  */
+@Api(value = "Order API", description = "订单REST API接口")
+@Validated
 @RestController
 @RequestMapping("/api/business/order")
 @Slf4j
@@ -35,6 +40,7 @@ public class OrderController {
      * @param condition 查询条件
      * @return 卖家订单列表
      */
+    @ApiOperation(value = "分页查询指定店铺的订单信息", notes = "卖家根据请求参数分页查询指定店铺的订单信息")
     @RequestMapping(path = "/{shopId}/orders", method = RequestMethod.GET)
     public Page<OrderVo> querySellerOrders(@PathVariable String shopId, OrderQueryCondition condition) {
         condition.setShopId(shopId);
@@ -48,6 +54,7 @@ public class OrderController {
      * @param condition 查询条件
      * @return 买家订单列表
      */
+    @ApiOperation(value = "分页查询自身的订单信息", notes = "买家根据请求参数分页查询自身订单信息")
     @RequestMapping(path = "/orders", method = RequestMethod.GET)
     public Page<OrderVo> queryBuyerOrders(OrderQueryCondition condition) {
         condition.setShopId(null);
@@ -61,6 +68,7 @@ public class OrderController {
      * @param request 订单创建参数
      * @return order
      */
+    @ApiOperation(value = "下单", notes = "下单")
     @RequestMapping(path = "/{shopId}/orders", method = RequestMethod.POST)
     public OrderVo create(@PathVariable String shopId, OrderCreateRequest request) {
         request.setShopId(shopId);
@@ -80,6 +88,7 @@ public class OrderController {
      * @param orderId 订单ID
      * @return order
      */
+    @ApiOperation(value = "订单支付", notes = "订单支付")
     @RequestMapping(path = "/{shopId}/orders/{orderId}/pay", method = RequestMethod.PUT)
     public OrderVo pay(@PathVariable String shopId, @PathVariable String orderId) {
         OrderOperateRequest request = new OrderOperateRequest();
@@ -100,6 +109,7 @@ public class OrderController {
      * @param orderId 订单ID
      * @return order
      */
+    @ApiOperation(value = "订单发货", notes = "订单发货")
     @RequestMapping(path = "/{shopId}/orders/{orderId}/deliver", method = RequestMethod.PUT)
     public OrderVo deliver(@PathVariable String shopId, @PathVariable String orderId) {
         OrderOperateRequest request = new OrderOperateRequest();
@@ -120,6 +130,7 @@ public class OrderController {
      * @param orderId 订单ID
      * @return order
      */
+    @ApiOperation(value = "订单确认收货", notes = "订单确认收货")
     @RequestMapping(path = "/{shopId}/orders/{orderId}/confirm", method = RequestMethod.PUT)
     public OrderVo confirm(@PathVariable String shopId, @PathVariable String orderId) {
         OrderOperateRequest request = new OrderOperateRequest();

@@ -21,9 +21,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableAspectJAutoProxy
-public class Application {
+public class BusinessApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(BusinessApplication.class, args);
     }
 
     @Bean
