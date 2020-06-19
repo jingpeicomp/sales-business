@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
         @Index(columnList = "AUTO_CONFIRM_TIME", name = "IDX_T_AUTO_CONFIRM_TIME")})
 @Data
 @EntityListeners(AuditingEntityListener.class)
+@SuppressWarnings("UnusedReturnValue")
 public class Order implements Serializable, Describable {
     /**
      * 订单编号
